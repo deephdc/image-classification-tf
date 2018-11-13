@@ -110,6 +110,3 @@ def print_conf_table(conf=conf_d):
         for g_key, g_val in sorted(val.items()):
             print("{:<25}{:<30}{:<15} \n".format(group, g_key, str(g_val)))
         print('-' * 75 + '\n')
-
-
-

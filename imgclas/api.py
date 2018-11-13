@@ -265,31 +265,27 @@ def train(user_conf={}):
     Parameters
     ----------
     user_conf : dict
-        Dict with the user's configuration parameters tha will replace the defaults.
+        Json dict (created with json.dumps) with the user's configuration parameters that will replace the defaults.
+        Must be loaded with json.loads()
         For example:
-            user_conf = {'model': {'modelname': {'value': "ResNet50"}}}
+            user_conf={'num_classes': 'null', 'lr_step_decay': '0.1', 'lr_step_schedule': '[0.7, 0.9]', 'use_early_stopping': 'false'}
     """
     CONF = config.CONF
 
-    # Here one would update the default configuartion with the user input configuartion (not working yet!)
-    # CONF.update(user_conf)
-    # config.check_conf(conf=CONF)
+    # Update the conf with the user input
+    for group, val in sorted(CONF.items()):
+        for g_key, g_val in sorted(val.items()):
+            g_val['value'] = json.loads(user_conf[g_key])
+
+    # Check the configuration
+    try:
+        config.check_conf(conf=CONF)
+    except Exception as e:
+        raise BadRequest(e)
 
     CONF = config.conf_dict(conf=CONF)
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S').replace(' ', '_')
 
-    ############Remove###########
-    CONF['training']['epochs'] = 30
-    CONF['training']['lr_step_schedule'] = [0.7, 0.9]
-    CONF['training']['l2_reg'] = 1e-4
-    CONF['training']['use_validation'] = False
-    CONF['training']['ckpt_freq'] = None
-    CONF['training']['class_weights_mode'] = None
-    CONF['model']['modelname'] = "Xception"
-    CONF['general']['images_directory'] = '/media/ignacio/Datos/datasets/semillas/datasets'  # absolute path to file_dir
-    #############################
-
     config.print_conf_table(CONF)
-
-    K.clear_session() # remove the model load for prediction
+    K.clear_session() # remove the model loaded for prediction
     train_fn(TIMESTAMP=timestamp, CONF=CONF)
