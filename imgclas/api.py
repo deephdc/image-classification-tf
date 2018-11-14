@@ -140,7 +140,7 @@ def predict_url(urls, merge=True):
     with graph.as_default():
         pred_lab, pred_prob = predict(model=model,
                                       X=urls,
-                                      CONF=conf,
+                                      conf=conf,
                                       top_K=TOP_K,
                                       filemode='url',
                                       merge=merge)
@@ -160,7 +160,7 @@ def predict_file(filenames, merge=True):
     with graph.as_default():
         pred_lab, pred_prob = predict(model=model,
                                       X=filenames,
-                                      CONF=conf,
+                                      conf=conf,
                                       top_K=TOP_K,
                                       filemode='local',
                                       merge=merge)
@@ -190,7 +190,7 @@ def predict_data(images, merge=True):
         with graph.as_default():
             pred_lab, pred_prob = predict(model=model,
                                           X=filenames,
-                                          CONF=conf,
+                                          conf=conf,
                                           top_K=TOP_K,
                                           filemode='local',
                                           merge=merge)
@@ -260,7 +260,7 @@ def metadata():
 
 
 @catch_error
-def train(user_conf={}):
+def train(user_conf):
     """
     Parameters
     ----------
