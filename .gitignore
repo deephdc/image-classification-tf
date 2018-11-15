@@ -142,6 +142,6 @@ GTAGS
 
 # Things specific to this project 
 ###################################
-./imgclas/webpage/templates/labels.html
+imgclas/webpage/templates/labels.html
 
 
