@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Basic Page Needs
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta charset="utf-8">
+    <title>DEEP Image classification</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Mobile Specific Metas
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- FONT
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+    <!-- CSS
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link type= "text/css" rel="stylesheet" href="../static/css/normalize.css">
+    <link type= "text/css" rel="stylesheet" href="../static/css/skeleton.css">
+    <link type= "text/css" rel="stylesheet" href="../static/css/general.css">
+    <link type= "text/css" rel="stylesheet" href="../static/css/custom.css">
+
+	<!-- Favicon
+	–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+	<link rel="icon" type="image/png" href="./static/images/favicon.png">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+
+<body>
+
+<!-- Primary Page Layout
+–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+<div class="container">
+    <section class="header">
+        <h1 class="center"  style="margin-top: 25%">Image classification</h1>
+    </section>
+    <div class="docs-section">
+        <div class="row">
+          <div class="eight columns offset-by-two column">
+              <h4>Labels</h4>
+              <ul>
+                
+                  <li>Genus Abies</a></li>
+                
+                  <li>Genus Abutilon</a></li>
+                
+                  <li>Genus Acacia</a></li>
+                
+                  <li>Genus Acanthus</a></li>
+                
+                  <li>Genus Acer</a></li>
+                
+                  <li>Genus Achillea</a></li>
+                
+                  <li>Genus Acinos</a></li>
+                
+                  <li>Genus Actaea</a></li>
+                
+                  <li>Genus Adenocarpus</a></li>
+                
+                  <li>Genus Adonis</a></li>
+                
+                  <li>Genus Aegilops</a></li>
+                
+                  <li>Genus Aegopodium</a></li>
+                
+                  <li>Genus Aethusa</a></li>
+                
+                  <li>Genus Agrimonia</a></li>
+                
+                  <li>Genus Agrostemma</a></li>
+                
+                  <li>Genus Agrostis</a></li>
+                
+                  <li>Genus Ailanthus</a></li>
+                
+                  <li>Genus Ajuga</a></li>
+                
+                  <li>Genus Alcea</a></li>
+                
+                  <li>Genus Alisma</a></li>
+                
+                  <li>Genus Alliaria</a></li>
+                
+                  <li>Genus Allium</a></li>
+                
+                  <li>Genus Alnus</a></li>
+                
+                  <li>Genus Alopecurus</a></li>
+                
+                  <li>Genus Althaea</a></li>
+                
+                  <li>Genus Alyssum</a></li>
+                
+                  <li>Genus Amaranthus</a></li>
+                
+                  <li>Genus Amaryllis</a></li>
+                
+                  <li>Genus Ammi</a></li>
+                
+                  <li>Genus Ammophila</a></li>
+                
+                  <li>Genus Anacyclus</a></li>
+                
+                  <li>Genus Anagyris</a></li>
+                
+                  <li>Genus Androsace</a></li>
+                
+                  <li>Genus Antennaria</a></li>
+                
+                  <li>Genus Anthemis</a></li>
+                
+                  <li>Genus Anthericum</a></li>
+                
+                  <li>Genus Anthoxanthum</a></li>
+                
+                  <li>Genus Anthriscus</a></li>
+                
+                  <li>Genus Anthyllis</a></li>
+                
+                  <li>Genus Antirrhinum</a></li>
+                
+                  <li>Genus Apium</a></li>
+                
+                  <li>Genus Aquilegia</a></li>
+                
+                  <li>Genus Arabidopsis</a></li>
+                
+                  <li>Genus Arabis</a></li>
+                
+                  <li>Genus Araujia</a></li>
+                
+                  <li>Genus Arbutus</a></li>
+                
+                  <li>Genus Arctium</a></li>
+                
+                  <li>Genus Arctostaphylos</a></li>
+                
+                  <li>Genus Arenaria</a></li>
+                
+                  <li>Genus Aristolochia</a></li>
+                
+                  <li>Genus Armeria</a></li>
+                
+                  <li>Genus Arnica</a></li>
+                
+                  <li>Genus Arnoseris</a></li>
+                
+                  <li>Genus Arrhenatherum</a></li>
+                
+                  <li>Genus Artemisia</a></li>
+                
+                  <li>Genus Arum</a></li>
+                
+                  <li>Genus Aruncus</a></li>
+                
+                  <li>Genus Asphodelus</a></li>
+                
+                  <li>Genus Aster</a></li>
+                
+                  <li>Genus Astragalus</a></li>
+                
+                  <li>Genus Astrantia</a></li>
+                
+                  <li>Genus Atriplex</a></li>
+                
+                  <li>Genus Atropa</a></li>
+                
+                  <li>Genus Barbarea</a></li>
+                
+                  <li>Genus Bartsia</a></li>
+                
+                  <li>Genus Bassia</a></li>
+                
+                  <li>Genus Bellis</a></li>
+                
+                  <li>Genus Berberis</a></li>
+                
+                  <li>Genus Berteroa</a></li>
+                
+                  <li>Genus Berula</a></li>
+                
+                  <li>Genus Bidens</a></li>
+                
+                  <li>Genus Bifora</a></li>
+                
+                  <li>Genus Bituminaria</a></li>
+                
+                  <li>Genus Blackstonia</a></li>
+                
+                  <li>Genus Bolboschoenus</a></li>
+                
+                  <li>Genus Bombycilaena</a></li>
+                
+                  <li>Genus Borago</a></li>
+                
+                  <li>Genus Bowlesia</a></li>
+                
+                  <li>Genus Brachypodium</a></li>
+                
+                  <li>Genus Brassica</a></li>
+                
+                  <li>Genus Briza</a></li>
+                
+                  <li>Genus Bromus</a></li>
+                
+                  <li>Genus Bryonia</a></li>
+                
+                  <li>Genus Buglossoides</a></li>
+                
+                  <li>Genus Bunias</a></li>
+                
+                  <li>Genus Bunium</a></li>
+                
+                  <li>Genus Bupleurum</a></li>
+                
+                  <li>Genus Cakile</a></li>
+                
+                  <li>Genus Calamagrostis</a></li>
+                
+                  <li>Genus Calendula</a></li>
+                
+                  <li>Genus Calepina</a></li>
+                
+                  <li>Genus Calicotome</a></li>
+                
+                  <li>Genus Callitriche</a></li>
+                
+                  <li>Genus Caltha</a></li>
+                
+                  <li>Genus Calystegia</a></li>
+                
+                  <li>Genus Camelina</a></li>
+                
+                  <li>Genus Campanula</a></li>
+                
+                  <li>Genus Canna</a></li>
+                
+                  <li>Genus Cannabis</a></li>
+                
+                  <li>Genus Capparis</a></li>
+                
+                  <li>Genus Capsella</a></li>
+                
+                  <li>Genus Cardamine</a></li>
+                
+                  <li>Genus Cardaria</a></li>
+                
+                  <li>Genus Carduus</a></li>
+                
+                  <li>Genus Carex</a></li>
+                
+                  <li>Genus Carrichtera</a></li>
+                
+                  <li>Genus Carthamus</a></li>
+                
+                  <li>Genus Carum</a></li>
+                
+                  <li>Genus Caucalis</a></li>
+                
+                  <li>Genus Centaurea</a></li>
+                
+                  <li>Genus Centaurium</a></li>
+                
+                  <li>Genus Cerastium</a></li>
+                
+                  <li>Genus Ceratonia</a></li>
+                
+                  <li>Genus Cercis</a></li>
+                
+                  <li>Genus Chaenorhinum</a></li>
+                
+                  <li>Genus Chaerophyllum</a></li>
+                
+                  <li>Genus Chamaemelum</a></li>
+                
+                  <li>Genus Chelidonium</a></li>
+                
+                  <li>Genus Chenopodium</a></li>
+                
+                  <li>Genus Chondrilla</a></li>
+                
+                  <li>Genus Chrysosplenium</a></li>
+                
+                  <li>Genus Cicendia</a></li>
+                
+                  <li>Genus Cicer</a></li>
+                
+                  <li>Genus Cichorium</a></li>
+                
+                  <li>Genus Cirsium</a></li>
+                
+                  <li>Genus Cistus</a></li>
+                
+                  <li>Genus Citrullus</a></li>
+                
+                  <li>Genus Cladium</a></li>
+                
+                  <li>Genus Clematis</a></li>
+                
+                  <li>Genus Clinopodium</a></li>
+                
+                  <li>Genus Cneorum</a></li>
+                
+                  <li>Genus Cnicus</a></li>
+                
+                  <li>Genus Cochlearia</a></li>
+                
+                  <li>Genus Coincya</a></li>
+                
+                  <li>Genus Coix</a></li>
+                
+                  <li>Genus Colutea</a></li>
+                
+                  <li>Genus Conium</a></li>
+                
+                  <li>Genus Conopodium</a></li>
+                
+                  <li>Genus Conringia</a></li>
+                
+                  <li>Genus Consolida</a></li>
+                
+                  <li>Genus Convolvulus</a></li>
+                
+                  <li>Genus Conyza</a></li>
+                
+                  <li>Genus Coriandrum</a></li>
+                
+                  <li>Genus Coriaria</a></li>
+                
+                  <li>Genus Cornus</a></li>
+                
+                  <li>Genus Coronilla</a></li>
+                
+                  <li>Genus Cortaderia</a></li>
+                
+                  <li>Genus Corydalis</a></li>
+                
+                  <li>Genus Corynephorus</a></li>
+                
+                  <li>Genus Cosmos</a></li>
+                
+                  <li>Genus Cotula</a></li>
+                
+                  <li>Genus Crataegus</a></li>
+                
+                  <li>Genus Crepis</a></li>
+                
+                  <li>Genus Crithmum</a></li>
+                
+                  <li>Genus Crucianella</a></li>
+                
+                  <li>Genus Crupina</a></li>
+                
+                  <li>Genus Cucubalus</a></li>
+                
+                  <li>Genus Cucumis</a></li>
+                
+                  <li>Genus Cuminum</a></li>
+                
+                  <li>Genus Cupressus</a></li>
+                
+                  <li>Genus Cynara</a></li>
+                
+                  <li>Genus Cynodon</a></li>
+                
+                  <li>Genus Cynoglossum</a></li>
+                
+                  <li>Genus Cynosurus</a></li>
+                
+                  <li>Genus Cyperus</a></li>
+                
+                  <li>Genus Cytisophyllum</a></li>
+                
+                  <li>Genus Cytisus</a></li>
+                
+                  <li>Genus Dactylis</a></li>
+                
+                  <li>Genus Danthonia</a></li>
+                
+                  <li>Genus Daphne</a></li>
+                
+                  <li>Genus Dasypyrum</a></li>
+                
+                  <li>Genus Datura</a></li>
+                
+                  <li>Genus Daucus</a></li>
+                
+                  <li>Genus Descurainia</a></li>
+                
+                  <li>Genus Dianthus</a></li>
+                
+                  <li>Genus Digitalis</a></li>
+                
+                  <li>Genus Digitaria</a></li>
+                
+                  <li>Genus Dipcadi</a></li>
+                
+                  <li>Genus Dipsacus</a></li>
+                
+                  <li>Genus Dittrichia</a></li>
+                
+                  <li>Genus Doronicum</a></li>
+                
+                  <li>Genus Draba</a></li>
+                
+                  <li>Genus Dryas</a></li>
+                
+                  <li>Genus Duchesnea</a></li>
+                
+                  <li>Genus Echinochloa</a></li>
+                
+                  <li>Genus Echinops</a></li>
+                
+                  <li>Genus Eleocharis</a></li>
+                
+                  <li>Genus Eleusine</a></li>
+                
+                  <li>Genus Elymus</a></li>
+                
+                  <li>Genus Emerus</a></li>
+                
+                  <li>Genus Empetrum</a></li>
+                
+                  <li>Genus Ephedra</a></li>
+                
+                  <li>Genus Epilobium</a></li>
+                
+                  <li>Genus Eragrostis</a></li>
+                
+                  <li>Genus Erica</a></li>
+                
+                  <li>Genus Erigeron</a></li>
+                
+                  <li>Genus Erinus</a></li>
+                
+                  <li>Genus Eriophorum</a></li>
+                
+                  <li>Genus Erodium</a></li>
+                
+                  <li>Genus Eruca</a></li>
+                
+                  <li>Genus Erucastrum</a></li>
+                
+                  <li>Genus Eryngium</a></li>
+                
+                  <li>Genus Erysimum</a></li>
+                
+                  <li>Genus Eschscholzia</a></li>
+                
+                  <li>Genus Euonymus</a></li>
+                
+                  <li>Genus Eupatorium</a></li>
+                
+                  <li>Genus Euphorbia</a></li>
+                
+                  <li>Genus Euphrasia</a></li>
+                
+                  <li>Genus Fagonia</a></li>
+                
+                  <li>Genus Fagopyrum</a></li>
+                
+                  <li>Genus Falcaria</a></li>
+                
+                  <li>Genus Fallopia</a></li>
+                
+                  <li>Genus Fedia</a></li>
+                
+                  <li>Genus Festuca</a></li>
+                
+                  <li>Genus Fibigia</a></li>
+                
+                  <li>Genus Filipendula</a></li>
+                
+                  <li>Genus Foeniculum</a></li>
+                
+                  <li>Genus Fragaria</a></li>
+                
+                  <li>Genus Frangula</a></li>
+                
+                  <li>Genus Fraxinus</a></li>
+                
+                  <li>Genus Fumana</a></li>
+                
+                  <li>Genus Fumaria</a></li>
+                
+                  <li>Genus Gaillardia</a></li>
+                
+                  <li>Genus Galeopsis</a></li>
+                
+                  <li>Genus Galium</a></li>
+                
+                  <li>Genus Genista</a></li>
+                
+                  <li>Genus Gentiana</a></li>
+                
+                  <li>Genus Geranium</a></li>
+                
+                  <li>Genus Geum</a></li>
+                
+                  <li>Genus Gladiolus</a></li>
+                
+                  <li>Genus Glaucium</a></li>
+                
+                  <li>Genus Gleditsia</a></li>
+                
+                  <li>Genus Globularia</a></li>
+                
+                  <li>Genus Gnaphalium</a></li>
+                
+                  <li>Genus Guillonea</a></li>
+                
+                  <li>Genus Halimium</a></li>
+                
+                  <li>Genus Hedera</a></li>
+                
+                  <li>Genus Helianthemum</a></li>
+                
+                  <li>Genus Helichrysum</a></li>
+                
+                  <li>Genus Helictotrichon</a></li>
+                
+                  <li>Genus Heliotropium</a></li>
+                
+                  <li>Genus Helleborus</a></li>
+                
+                  <li>Genus Heracleum</a></li>
+                
+                  <li>Genus Herniaria</a></li>
+                
+                  <li>Genus Hesperis</a></li>
+                
+                  <li>Genus Hibiscus</a></li>
+                
+                  <li>Genus Hieracium</a></li>
+                
+                  <li>Genus Hirschfeldia</a></li>
+                
+                  <li>Genus Holcus</a></li>
+                
+                  <li>Genus Homogyne</a></li>
+                
+                  <li>Genus Hordeum</a></li>
+                
+                  <li>Genus Horminum</a></li>
+                
+                  <li>Genus Hornungia</a></li>
+                
+                  <li>Genus Humulus</a></li>
+                
+                  <li>Genus Hymenolobus</a></li>
+                
+                  <li>Genus Hyoscyamus</a></li>
+                
+                  <li>Genus Hyparrhenia</a></li>
+                
+                  <li>Genus Hypericum</a></li>
+                
+                  <li>Genus Hypochaeris</a></li>
+                
+                  <li>Genus Hyssopus</a></li>
+                
+                  <li>Genus Iberis</a></li>
+                
+                  <li>Genus Ilex</a></li>
+                
+                  <li>Genus Impatiens</a></li>
+                
+                  <li>Genus Inula</a></li>
+                
+                  <li>Genus Ipomoea</a></li>
+                
+                  <li>Genus Isatis</a></li>
+                
+                  <li>Genus Jasione</a></li>
+                
+                  <li>Genus Jasminum</a></li>
+                
+                  <li>Genus Jasonia</a></li>
+                
+                  <li>Genus Juncus</a></li>
+                
+                  <li>Genus Juniperus</a></li>
+                
+                  <li>Genus Jurinea</a></li>
+                
+                  <li>Genus Kernera</a></li>
+                
+                  <li>Genus Laburnum</a></li>
+                
+                  <li>Genus Lactuca</a></li>
+                
+                  <li>Genus Lagurus</a></li>
+                
+                  <li>Genus Lamium</a></li>
+                
+                  <li>Genus Lantana</a></li>
+                
+                  <li>Genus Lapsana</a></li>
+                
+                  <li>Genus Lathyrus</a></li>
+                
+                  <li>Genus Laurus</a></li>
+                
+                  <li>Genus Lavandula</a></li>
+                
+                  <li>Genus Legousia</a></li>
+                
+                  <li>Genus Leontodon</a></li>
+                
+                  <li>Genus Leonurus</a></li>
+                
+                  <li>Genus Lepidium</a></li>
+                
+                  <li>Genus Leucanthemum</a></li>
+                
+                  <li>Genus Leucojum</a></li>
+                
+                  <li>Genus Levisticum</a></li>
+                
+                  <li>Genus Leymus</a></li>
+                
+                  <li>Genus Ligustrum</a></li>
+                
+                  <li>Genus Lilium</a></li>
+                
+                  <li>Genus Linaria</a></li>
+                
+                  <li>Genus Lobularia</a></li>
+                
+                  <li>Genus Lolium</a></li>
+                
+                  <li>Genus Lonicera</a></li>
+                
+                  <li>Genus Lotus</a></li>
+                
+                  <li>Genus Lunaria</a></li>
+                
+                  <li>Genus Lupinus</a></li>
+                
+                  <li>Genus Luzula</a></li>
+                
+                  <li>Genus Lychnis</a></li>
+                
+                  <li>Genus Lycium</a></li>
+                
+                  <li>Genus Lycopus</a></li>
+                
+                  <li>Genus Lygeum</a></li>
+                
+                  <li>Genus Lysimachia</a></li>
+                
+                  <li>Genus Lythrum</a></li>
+                
+                  <li>Genus Malcolmia</a></li>
+                
+                  <li>Genus Malus</a></li>
+                
+                  <li>Genus Malva</a></li>
+                
+                  <li>Genus Marrubium</a></li>
+                
+                  <li>Genus Matthiola</a></li>
+                
+                  <li>Genus Meconopsis</a></li>
+                
+                  <li>Genus Medicago</a></li>
+                
+                  <li>Genus Melampyrum</a></li>
+                
+                  <li>Genus Melica</a></li>
+                
+                  <li>Genus Melilotus</a></li>
+                
+                  <li>Genus Melissa</a></li>
+                
+                  <li>Genus Mentha</a></li>
+                
+                  <li>Genus Mercurialis</a></li>
+                
+                  <li>Genus Milium</a></li>
+                
+                  <li>Genus Mirabilis</a></li>
+                
+                  <li>Genus Misopates</a></li>
+                
+                  <li>Genus Modiola</a></li>
+                
+                  <li>Genus Montia</a></li>
+                
+                  <li>Genus Morus</a></li>
+                
+                  <li>Genus Muscari</a></li>
+                
+                  <li>Genus Myagrum</a></li>
+                
+                  <li>Genus Mycelis</a></li>
+                
+                  <li>Genus Myosotis</a></li>
+                
+                  <li>Genus Myrrhis</a></li>
+                
+                  <li>Genus Myrtus</a></li>
+                
+                  <li>Genus Narcissus</a></li>
+                
+                  <li>Genus Nardus</a></li>
+                
+                  <li>Genus Nepeta</a></li>
+                
+                  <li>Genus Nerium</a></li>
+                
+                  <li>Genus Neslia</a></li>
+                
+                  <li>Genus Nicandra</a></li>
+                
+                  <li>Genus Nicotiana</a></li>
+                
+                  <li>Genus Nigella</a></li>
+                
+                  <li>Genus Notobasis</a></li>
+                
+                  <li>Genus Notoceras</a></li>
+                
+                  <li>Genus Oenanthe</a></li>
+                
+                  <li>Genus Onobrychis</a></li>
+                
+                  <li>Genus Ononis</a></li>
+                
+                  <li>Genus Onopordum</a></li>
+                
+                  <li>Genus Onosma</a></li>
+                
+                  <li>Genus Opuntia</a></li>
+                
+                  <li>Genus Origanum</a></li>
+                
+                  <li>Genus Orlaya</a></li>
+                
+                  <li>Genus Ornithopus</a></li>
+                
+                  <li>Genus Orthilia</a></li>
+                
+                  <li>Genus Oxalis</a></li>
+                
+                  <li>Genus Oxyria</a></li>
+                
+                  <li>Genus Panicum</a></li>
+                
+                  <li>Genus Papaver</a></li>
+                
+                  <li>Genus Parapholis</a></li>
+                
+                  <li>Genus Parietaria</a></li>
+                
+                  <li>Genus Paris</a></li>
+                
+                  <li>Genus Parnassia</a></li>
+                
+                  <li>Genus Paspalum</a></li>
+                
+                  <li>Genus Pedicularis</a></li>
+                
+                  <li>Genus Peganum</a></li>
+                
+                  <li>Genus Pentaglottis</a></li>
+                
+                  <li>Genus Petrorhagia</a></li>
+                
+                  <li>Genus Petroselinum</a></li>
+                
+                  <li>Genus Phalaris</a></li>
+                
+                  <li>Genus Phillyrea</a></li>
+                
+                  <li>Genus Phleum</a></li>
+                
+                  <li>Genus Physalis</a></li>
+                
+                  <li>Genus Physocarpus</a></li>
+                
+                  <li>Genus Phytolacca</a></li>
+                
+                  <li>Genus Picea</a></li>
+                
+                  <li>Genus Picris</a></li>
+                
+                  <li>Genus Pinguicula</a></li>
+                
+                  <li>Genus Piptatherum</a></li>
+                
+                  <li>Genus Pistacia</a></li>
+                
+                  <li>Genus Plantago</a></li>
+                
+                  <li>Genus Platanus</a></li>
+                
+                  <li>Genus Poa</a></li>
+                
+                  <li>Genus Polycarpon</a></li>
+                
+                  <li>Genus Polygonum</a></li>
+                
+                  <li>Genus Polypogon</a></li>
+                
+                  <li>Genus Populus</a></li>
+                
+                  <li>Genus Portulaca</a></li>
+                
+                  <li>Genus Potentilla</a></li>
+                
+                  <li>Genus Primula</a></li>
+                
+                  <li>Genus Prunella</a></li>
+                
+                  <li>Genus Prunus</a></li>
+                
+                  <li>Genus Pseudorlaya</a></li>
+                
+                  <li>Genus Puccinellia</a></li>
+                
+                  <li>Genus Pulicaria</a></li>
+                
+                  <li>Genus Pulsatilla</a></li>
+                
+                  <li>Genus Quercus</a></li>
+                
+                  <li>Genus Ranunculus</a></li>
+                
+                  <li>Genus Raphanus</a></li>
+                
+                  <li>Genus Rapistrum</a></li>
+                
+                  <li>Genus Reseda</a></li>
+                
+                  <li>Genus Retama</a></li>
+                
+                  <li>Genus Reynoutria</a></li>
+                
+                  <li>Genus Rhamnus</a></li>
+                
+                  <li>Genus Rhinanthus</a></li>
+                
+                  <li>Genus Rhododendron</a></li>
+                
+                  <li>Genus Rhus</a></li>
+                
+                  <li>Genus Ricinus</a></li>
+                
+                  <li>Genus Robinia</a></li>
+                
+                  <li>Genus Romulea</a></li>
+                
+                  <li>Genus Rorippa</a></li>
+                
+                  <li>Genus Rosa</a></li>
+                
+                  <li>Genus Rubus</a></li>
+                
+                  <li>Genus Rumex</a></li>
+                
+                  <li>Genus Ruscus</a></li>
+                
+                  <li>Genus Salpichroa</a></li>
+                
+                  <li>Genus Salsola</a></li>
+                
+                  <li>Genus Salvia</a></li>
+                
+                  <li>Genus Sambucus</a></li>
+                
+                  <li>Genus Samolus</a></li>
+                
+                  <li>Genus Sanicula</a></li>
+                
+                  <li>Genus Saponaria</a></li>
+                
+                  <li>Genus Satureja</a></li>
+                
+                  <li>Genus Scabiosa</a></li>
+                
+                  <li>Genus Schinus</a></li>
+                
+                  <li>Genus Schkuhria</a></li>
+                
+                  <li>Genus Schoenoplectus</a></li>
+                
+                  <li>Genus Schoenus</a></li>
+                
+                  <li>Genus Scirpoides</a></li>
+                
+                  <li>Genus Scorzonera</a></li>
+                
+                  <li>Genus Scrophularia</a></li>
+                
+                  <li>Genus Sedum</a></li>
+                
+                  <li>Genus Sempervivum</a></li>
+                
+                  <li>Genus Senecio</a></li>
+                
+                  <li>Genus Serratula</a></li>
+                
+                  <li>Genus Setaria</a></li>
+                
+                  <li>Genus Sherardia</a></li>
+                
+                  <li>Genus Silene</a></li>
+                
+                  <li>Genus Silybum</a></li>
+                
+                  <li>Genus Sinapis</a></li>
+                
+                  <li>Genus Sisymbrium</a></li>
+                
+                  <li>Genus Smilax</a></li>
+                
+                  <li>Genus Smyrnium</a></li>
+                
+                  <li>Genus Solanum</a></li>
+                
+                  <li>Genus Solidago</a></li>
+                
+                  <li>Genus Sophora</a></li>
+                
+                  <li>Genus Sorbus</a></li>
+                
+                  <li>Genus Sorghum</a></li>
+                
+                  <li>Genus Sparganium</a></li>
+                
+                  <li>Genus Spartium</a></li>
+                
+                  <li>Genus Spergula</a></li>
+                
+                  <li>Genus Spergularia</a></li>
+                
+                  <li>Genus Spinacia</a></li>
+                
+                  <li>Genus Stachys</a></li>
+                
+                  <li>Genus Stellaria</a></li>
+                
+                  <li>Genus Succisa</a></li>
+                
+                  <li>Genus Symphoricarpos</a></li>
+                
+                  <li>Genus Taeniatherum</a></li>
+                
+                  <li>Genus Tanacetum</a></li>
+                
+                  <li>Genus Taxus</a></li>
+                
+                  <li>Genus Teesdalia</a></li>
+                
+                  <li>Genus Tetraclinis</a></li>
+                
+                  <li>Genus Teucrium</a></li>
+                
+                  <li>Genus Thalictrum</a></li>
+                
+                  <li>Genus Thesium</a></li>
+                
+                  <li>Genus Thlaspi</a></li>
+                
+                  <li>Genus Thymbra</a></li>
+                
+                  <li>Genus Thymus</a></li>
+                
+                  <li>Genus Tilia</a></li>
+                
+                  <li>Genus Torilis</a></li>
+                
+                  <li>Genus Trachelium</a></li>
+                
+                  <li>Genus Tragopogon</a></li>
+                
+                  <li>Genus Tribulus</a></li>
+                
+                  <li>Genus Trifolium</a></li>
+                
+                  <li>Genus Tuberaria</a></li>
+                
+                  <li>Genus Ulex</a></li>
+                
+                  <li>Genus Ulmus</a></li>
+                
+                  <li>Genus Urospermum</a></li>
+                
+                  <li>Genus Urtica</a></li>
+                
+                  <li>Genus Vaccaria</a></li>
+                
+                  <li>Genus Vaccinium</a></li>
+                
+                  <li>Genus Valeriana</a></li>
+                
+                  <li>Genus Verbascum</a></li>
+                
+                  <li>Genus Verbena</a></li>
+                
+                  <li>Genus Veronica</a></li>
+                
+                  <li>Genus Viburnum</a></li>
+                
+                  <li>Genus Vicia</a></li>
+                
+                  <li>Genus Vincetoxicum</a></li>
+                
+                  <li>Genus Viola</a></li>
+                
+                  <li>Genus Vitex</a></li>
+                
+                  <li>Genus Vitis</a></li>
+                
+                  <li>Genus Volutaria</a></li>
+                
+                  <li>Genus Wahlenbergia</a></li>
+                
+                  <li>Genus Withania</a></li>
+                
+                  <li>Genus Xanthium</a></li>
+                
+                  <li>Genus Ziziphus</a></li>
+                
+                  <li>Genus Zygophyllum</a></li>
+                
+              </ul>
+          </div>
+      </div>
+    </div>
+</div>
+</body>
+</html>

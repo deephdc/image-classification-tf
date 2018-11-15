@@ -48,6 +48,7 @@ else:
     TIMESTAMP = sorted(timestamps)[-1]
 # TIMESTAMP = 'theano_reproduced_albu'
 paths.timestamp = TIMESTAMP
+print('Using TIMESTAMP={}'.format(TIMESTAMP))
 
 # Set the checkpoint model to use to make the prediction
 ckpts =  os.listdir(paths.get_checkpoints_dir())
@@ -56,6 +57,7 @@ if 'final_model.h5' in ckpts:
 else:
     MODEL_NAME = sorted([name for name in ckpts if name.endswith('*.h5')])[-1]
 #MODEL_NAME = 'final_model.h5'
+print('Using MODEL_NAME={}'.format(MODEL_NAME))
 
 TOP_K = 5  # number of top classes predictions to save
 
@@ -220,8 +222,8 @@ def format_prediction(labels, probabilities):
             "label": name,
             "probability": float(prob),
             "info": {
-                "links": [{"link": 'Google images', "url": image_link(name)},
-                          {"link": 'Wikipedia', "url": wikipedia_link(name)}],
+                "links": {'Google images': image_link(name),
+                          'Wikipedia': wikipedia_link(name)},
                 'metadata': class_info[label_id],
             },
         }

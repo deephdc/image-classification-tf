@@ -113,17 +113,31 @@ By running the [saliency maps notebook](./notebooks/3.2-Saliency_maps.ipynb) you
 
 ![Saliency maps](./reports/figures/demo-saliency.png)
 
-Finally you can launch a simple webpage to use the trained classifier on your favorite brownser.
+Finally you can [launch a simple webpage](./imgclas/webpage/README.md) to use the trained classifier to predict images (both local and urls) on your favorite brownser.
 
-## Launching an API
 
-To access this package's functionality (both for training and predicting) through an API you have to install the `DEEPaaS` package:
+## Launching the full API
+
+#### Preliminaries for prediction
+
+If you want to use the API for prediction,  you have to do some preliminary steps to select the model you want to predict with:
+
+- copy your desired `.models/[timestamp]` to `.models/api`. If there is no `.models/api` folder, the default is to use the last available timestamp.
+- in the `.models/api/ckpts` leave only the desired checkpoint to use for prediction. If there are more than one chekpoints, the default is to use the last available checkpoint.
+
+#### Running the API
+
+
+To access this package's complete functionality (both for training and predicting) through an API you have to install the [DEEPaaS](https://github.com/indigo-dc/DEEPaaS) package:
 
 ```bash
 git clone https://github.com/indigo-dc/deepaas
 cd deepaas
 pip install -e .
 ```
+
+
+
 and run `deepaas-run --listen-ip 0.0.0.0`.
 From there you will be able to run training and predictions of this package  using `model_name=imgclas`.
 

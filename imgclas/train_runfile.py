@@ -156,9 +156,9 @@ def train_fn(TIMESTAMP, CONF):
     fpath = os.path.join(paths.get_checkpoints_dir(), 'final_model.h5')
     model.save(fpath)
 
-    print('Saving the model to protobuf...')
-    fpath = os.path.join(paths.get_checkpoints_dir(), 'final_model.proto')
-    model_utils.save_to_pb(model, fpath)
+    # print('Saving the model to protobuf...')
+    # fpath = os.path.join(paths.get_checkpoints_dir(), 'final_model.proto')
+    # model_utils.save_to_pb(model, fpath)
 
     print('Finished')
 
