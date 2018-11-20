@@ -116,6 +116,7 @@ def get_callbacks(CONF, use_lr_decay=True):
     # Add optional callbacks
     if use_lr_decay:
         milestones = np.array(CONF['training']['lr_step_schedule']) * CONF['training']['epochs']
+        milestones = milestones.astype(np.int)
         calls.append(LR_scheduler(lr_decay=CONF['training']['lr_step_decay'],
                                   epoch_milestones=milestones.tolist()))
 
