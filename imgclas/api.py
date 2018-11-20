@@ -47,7 +47,6 @@ if 'api' in timestamps:
     TIMESTAMP = 'api'
 else:
     TIMESTAMP = sorted(timestamps)[-1]
-# TIMESTAMP = 'theano_reproduced_albu'
 paths.timestamp = TIMESTAMP
 print('Using TIMESTAMP={}'.format(TIMESTAMP))
 
@@ -57,7 +56,6 @@ if 'final_model.h5' in ckpts:
     MODEL_NAME = 'final_model.h5'
 else:
     MODEL_NAME = sorted([name for name in ckpts if name.endswith('*.h5')])[-1]
-#MODEL_NAME = 'final_model.h5'
 print('Using MODEL_NAME={}'.format(MODEL_NAME))
 
 TOP_K = 5  # number of top classes predictions to save
