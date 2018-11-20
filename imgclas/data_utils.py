@@ -62,7 +62,7 @@ def load_data_splits(splits_dir, im_dir, split_name='train'):
     return X, y
 
 
-def load_class_names():
+def load_class_names(splits_dir):
     """
     Load list of class names
 
@@ -70,13 +70,12 @@ def load_class_names():
     -------
     Numpy array of shape (N) containing strs with class names
     """
-    splits_dir = paths.get_splits_dir()
     print("Loading class names...")
     class_names = np.genfromtxt(os.path.join(splits_dir, 'classes.txt'), dtype='str', delimiter='/n')
     return class_names
 
 
-def load_class_info():
+def load_class_info(splits_dir):
     """
     Load list of class names
 
@@ -84,7 +83,6 @@ def load_class_info():
     -------
     Numpy array of shape (N) containing strs with class names
     """
-    splits_dir = paths.get_splits_dir()
     print("Loading class info...")
     class_info = np.genfromtxt(os.path.join(splits_dir, 'info.txt'), dtype='str', delimiter='/n')
     return class_info

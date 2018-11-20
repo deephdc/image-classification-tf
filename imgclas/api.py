@@ -23,6 +23,7 @@ import os
 import tempfile
 import warnings
 from datetime import datetime
+import pkg_resources
 
 import numpy as np
 import requests
@@ -62,10 +63,11 @@ print('Using MODEL_NAME={}'.format(MODEL_NAME))
 TOP_K = 5  # number of top classes predictions to save
 
 # Load the class names and info
-class_names = load_class_names()
+splits_dir = paths.get_ts_splits_dir()
+class_names = load_class_names(splits_dir=splits_dir)
 class_info = None
-if 'info.txt' in os.listdir(paths.get_ts_splits_dir()):
-    class_info = load_class_info()
+if 'info.txt' in os.listdir(splits_dir):
+    class_info = load_class_info(splits_dir=splits_dir)
     if len(class_info) != len(class_names):
         warnings.warn("""The 'classes.txt' file has a different length than the 'info.txt' file.
         If a class has no information whatsoever you should leave that classes row empty or put a '-' symbol.
@@ -291,3 +293,30 @@ def train(user_conf):
     config.print_conf_table(CONF)
     K.clear_session() # remove the model loaded for prediction
     train_fn(TIMESTAMP=timestamp, CONF=CONF)
+
+
+def get_metadata():
+    """
+    Function to read metadata
+    """
+
+    module = __name__.split('.', 1)
+
+    pkg = pkg_resources.get_distribution(module[0])
+    meta = {
+        'Name': None,
+        'Version': None,
+        'Summary': None,
+        'Home-page': None,
+        'Author': None,
+        'Author-email': None,
+        'License': None,
+    }
+
+    for line in pkg.get_metadata_lines("PKG-INFO"):
+        for par in meta:
+            if line.startswith(par):
+                _, value = line.split(": ", 1)
+                meta[par] = value
+
+    return meta

@@ -57,7 +57,7 @@ def train_fn(TIMESTAMP, CONF):
         CONF['training']['use_validation'] = False
 
     # Load the class names
-    class_names = load_class_names()
+    class_names = load_class_names(splits_dir=paths.get_ts_splits_dir())
 
     # Update the configuration
     CONF['model']['preprocess_mode'] = model_utils.model_modes[CONF['model']['modelname']]

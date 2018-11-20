@@ -1,10 +1,8 @@
-** Notice:**
+### Notice
 
-**This is a fork of the [deep-viz repository](https://github.com/experiencor/deep-viz-keras) by [experiencor](https://github.com/experiencor). It allows the visualization of saliency maps for keras models.**
+This is a fork of the [deep-viz repository](https://github.com/experiencor/deep-viz-keras) by [experiencor](https://github.com/experiencor). It allows the visualization of saliency maps for keras models. The main changes compared to the original is the replacing of the `keras` depency to `tf.keras`.
 
-** The main changes compared to the original is the replacing of the `keras` depency to `tf.keras`. **
-
-
+***
 ***
 
 This repository contains the implementations in Keras of various methods to understand the prediction by a Convolutional Neural Networks. Implemented methods are:
@@ -17,17 +15,6 @@ This repository contains the implementations in Keras of various methods to unde
 Each of them is accompanied with the corresponding smoothgrad version [https://arxiv.org/abs/1706.03825], which improves on any baseline method by adding random noise.
 
 Courtesy of https://github.com/tensorflow/saliency and https://github.com/mbojarski/VisualBackProp.
-
-# Examples
-
-* Dog
-
-<img width="700" src="images/doberman_viz.png">
-
-* Dog and Cat
-
-<img width="700" src="images/cat_dog_viz.png">
-
 
 # Usage
 
