@@ -44,6 +44,7 @@ from imgclas.train_runfile import train_fn
 
 # Set the timestamp
 timestamps = os.listdir(paths.get_models_dir())
+ckpts = []
 
 if not timestamps:
     warnings.warn("""No available model timestamps for prediction. Therefore the API can only be used for training.""")
@@ -57,40 +58,44 @@ else:
     print('Using TIMESTAMP={}'.format(TIMESTAMP))
 
     # Set the checkpoint model to use to make the prediction
-    ckpts =  os.listdir(paths.get_checkpoints_dir())
-    if 'final_model.h5' in ckpts:
-        MODEL_NAME = 'final_model.h5'
+    ckpts = os.listdir(paths.get_checkpoints_dir())
+    if not ckpts:
+        warnings.warn(
+            """No available model checkpoints for prediction. Therefore the API can only be used for training.""")
     else:
-        MODEL_NAME = sorted([name for name in ckpts if name.endswith('*.h5')])[-1]
-    print('Using MODEL_NAME={}'.format(MODEL_NAME))
+        if 'final_model.h5' in ckpts:
+            MODEL_NAME = 'final_model.h5'
+        else:
+            MODEL_NAME = sorted([name for name in ckpts if name.endswith('*.h5')])[-1]
+        print('Using MODEL_NAME={}'.format(MODEL_NAME))
 
-    TOP_K = 5  # number of top classes predictions to save
+        TOP_K = 5  # number of top classes predictions to save
 
-    # Load the class names and info
-    splits_dir = paths.get_ts_splits_dir()
-    class_names = load_class_names(splits_dir=splits_dir)
-    class_info = None
-    if 'info.txt' in os.listdir(splits_dir):
-        class_info = load_class_info(splits_dir=splits_dir)
-        if len(class_info) != len(class_names):
-            warnings.warn("""The 'classes.txt' file has a different length than the 'info.txt' file.
-            If a class has no information whatsoever you should leave that classes row empty or put a '-' symbol.
-            The API will run with no info until this is solved.""")
-            class_info = None
-    if class_info is None:
-        class_info = ['' for _ in range(len(class_names))]
+        # Load the class names and info
+        splits_dir = paths.get_ts_splits_dir()
+        class_names = load_class_names(splits_dir=splits_dir)
+        class_info = None
+        if 'info.txt' in os.listdir(splits_dir):
+            class_info = load_class_info(splits_dir=splits_dir)
+            if len(class_info) != len(class_names):
+                warnings.warn("""The 'classes.txt' file has a different length than the 'info.txt' file.
+                If a class has no information whatsoever you should leave that classes row empty or put a '-' symbol.
+                The API will run with no info until this is solved.""")
+                class_info = None
+        if class_info is None:
+            class_info = ['' for _ in range(len(class_names))]
 
-    # Load training configuration
-    conf_path = os.path.join(paths.get_conf_dir(), 'conf.json')
-    with open(conf_path) as f:
-        conf = json.load(f)
+        # Load training configuration
+        conf_path = os.path.join(paths.get_conf_dir(), 'conf.json')
+        with open(conf_path) as f:
+            conf = json.load(f)
 
-    # Load the model
-    model = load_model(os.path.join(paths.get_checkpoints_dir(), MODEL_NAME), custom_objects=utils.get_custom_objects())
-    graph = tf.get_default_graph()
+        # Load the model
+        model = load_model(os.path.join(paths.get_checkpoints_dir(), MODEL_NAME), custom_objects=utils.get_custom_objects())
+        graph = tf.get_default_graph()
 
-    #Allow only certain file extensions
-    allowed_extensions = set(['png', 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG'])
+        #Allow only certain file extensions
+        allowed_extensions = set(['png', 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG'])
 ########################################################################################################################
 
 
@@ -106,6 +111,8 @@ def catch_error(f):
 def catch_no_models():
     if not timestamps:
         raise BadRequest('You have no models in your `./models` folder to be used for inference.')
+    if not ckpts:
+        raise BadRequest('You have no checkpoints in your `./models/{}/ckpts` folder to be used for inference.'.format(TIMESTAMP))
 
 
 def catch_url_error(url_list):
