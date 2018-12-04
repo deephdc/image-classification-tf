@@ -44,11 +44,9 @@ from imgclas.train_runfile import train_fn
 
 # Set the timestamp
 timestamps = os.listdir(paths.get_models_dir())
-ckpts = []
-
 if not timestamps:
-    warnings.warn("""No available model timestamps for prediction. Therefore the API can only be used for training.""")
-
+    warnings.warn(
+        """No available model timestamps for prediction. Therefore the API can only be used for training.""")
 else:
     if 'api' in timestamps:
         TIMESTAMP = 'api'
