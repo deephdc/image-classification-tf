@@ -172,7 +172,7 @@ def to_nextcloud(fpath):
     command = (['rclone', 'copy', fpath, 'ncplants:/output'])
     result = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, error = result.communicate()
-
+    print("The error -------------->" , error)
     return output,error
 
 
