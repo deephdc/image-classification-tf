@@ -20,6 +20,7 @@ gevent, uwsgi.
 
 import json
 import os
+import subprocess
 import tempfile
 import warnings
 from datetime import datetime
@@ -147,6 +148,22 @@ def catch_localfile_error(file_list):
         if extension not in allowed_extensions:
             raise BadRequest("""Local image format error:
             At least one file is not in a standard image format (jpg|jpeg|png).""")
+
+
+@catch_error
+def mount_nextcloud():
+
+    #Copy train.txt and classes.txt from NextCloud
+    command = (['rclone', 'copy', 'ncplants:/data_splits', '/srv/image-classification-tf/data/dataset_files/'])
+    result = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output_splits, error_splits = result.communicate()
+
+    command = (['rclone', 'copy', 'ncplants:/plants_images', '/srv/image-classification-tf/data/images/'])
+    result = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output_images, error_images = result.communicate()
+    
+    return output_images,error_images, output_splits, error_splits
+
 
 
 @catch_error
@@ -292,7 +309,9 @@ def train(user_conf):
             user_conf={'num_classes': 'null', 'lr_step_decay': '0.1', 'lr_step_schedule': '[0.7, 0.9]', 'use_early_stopping': 'false'}
     """
     CONF = config.CONF
-
+    
+    #Mount NextCloud folders
+    mount_nextcloud()
     # Update the conf with the user input
     for group, val in sorted(CONF.items()):
         for g_key, g_val in sorted(val.items()):
