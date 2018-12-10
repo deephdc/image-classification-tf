@@ -151,7 +151,7 @@ def catch_localfile_error(file_list):
 
 
 @catch_error
-def mount_nextcloud():
+def from_nextcloud():
 
     #Copy train.txt and classes.txt from NextCloud
     command = (['rclone', 'copy', 'ncplants:/data_splits', '/srv/image-classification-tf/data/dataset_files/'])
@@ -164,6 +164,16 @@ def mount_nextcloud():
     
     return output_images,error_images, output_splits, error_splits
 
+
+@catch_error
+def to_nextcloud(fpath):
+
+    #Copy train.txt and classes.txt from NextCloud
+    command = (['rclone', 'copy', fpath, 'ncplants:/output'])
+    result = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, error = result.communicate()
+
+    return output,error
 
 
 @catch_error
@@ -311,7 +321,7 @@ def train(user_conf):
     CONF = config.CONF
     
     #Mount NextCloud folders
-    mount_nextcloud()
+    from_nextcloud()
     # Update the conf with the user input
     for group, val in sorted(CONF.items()):
         for g_key, g_val in sorted(val.items()):
@@ -328,8 +338,8 @@ def train(user_conf):
 
     config.print_conf_table(CONF)
     K.clear_session() # remove the model loaded for prediction
-    train_fn(TIMESTAMP=timestamp, CONF=CONF)
-
+    fpath=train_fn(TIMESTAMP=timestamp, CONF=CONF)
+    to_nextcloud(fpath)
 
 @catch_error
 def get_train_args():
