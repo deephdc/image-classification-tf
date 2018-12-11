@@ -37,19 +37,20 @@ from imgclas.optimizers import customAdam
 def train_fn(TIMESTAMP, CONF):
 
     paths.timestamp = TIMESTAMP
+    paths.CONF = CONF
 
     utils.create_dir_tree()
     utils.backup_splits()
 
     # Load the training data
     X_train, y_train = load_data_splits(splits_dir=paths.get_ts_splits_dir(),
-                                        im_dir=CONF['general']['images_directory'],
+                                        im_dir=paths.get_images_dir(),
                                         split_name='train')
 
     # Load the validation data
     if (CONF['training']['use_validation']) and ('val.txt' in os.listdir(paths.get_splits_dir())):
         X_val, y_val = load_data_splits(splits_dir=paths.get_ts_splits_dir(),
-                                        im_dir=CONF['general']['images_directory'],
+                                        im_dir=paths.get_images_dir(),
                                         split_name='val')
     else:
         print('No validation data.')
