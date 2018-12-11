@@ -162,11 +162,11 @@ def train_fn(TIMESTAMP, CONF):
     # model_utils.save_to_pb(model, fpath)
 
     print('Finished')
-    return paths.get_models_dir()
+
 
 if __name__ == '__main__':
 
     CONF = config.conf_dict()
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S').replace(' ', '_')
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H%M%S')
 
     train_fn(TIMESTAMP=timestamp, CONF=CONF)

@@ -39,6 +39,14 @@ from imgclas.test_utils import predict
 from imgclas.train_runfile import train_fn
 
 
+# Mount NextCloud folders (if NextCloud is available)
+try:
+    mount_nextcloud('ncplants:/dataset_files', paths.get_splits_dir())
+    mount_nextcloud('ncplants:/images', paths.get_images_dir())
+    mount_nextcloud('ncplants:/models', paths.get_models_dir())
+except Exception as e:
+    print(e)
+
 ########################################################################################################################
 # Everything in this block of code is only used for prediction!!
 
@@ -293,13 +301,6 @@ def train(user_conf):
     """
     CONF = config.CONF
 
-    # Mount NextCloud folders (if NextCloud is available)
-    try:
-        mount_nextcloud('ncplants:/data_splits', '/srv/image-classification-tf/data/dataset_files/')
-        mount_nextcloud('ncplants:/plants_images', '/srv/image-classification-tf/data/images/')
-    except Exception as e:
-        print(e)
-
     # Update the conf with the user input
     for group, val in sorted(CONF.items()):
         for g_key, g_val in sorted(val.items()):
@@ -316,13 +317,14 @@ def train(user_conf):
 
     config.print_conf_table(CONF)
     K.clear_session() # remove the model loaded for prediction
-    fpath = train_fn(TIMESTAMP=timestamp, CONF=CONF)
+    train_fn(TIMESTAMP=timestamp, CONF=CONF)
     
-    # Mount NextCloud folders (if NextCloud is available)
+    # Sync with NextCloud folders (if NextCloud is available)
     try:
-        mount_nextcloud(fpath, 'ncplants:/models')
+        mount_nextcloud(paths.get_models_dir(), 'ncplants:/models')
     except Exception as e:
         print(e)    
+
 
 @catch_error
 def get_train_args():
