@@ -293,9 +293,12 @@ def train(user_conf):
     """
     CONF = config.CONF
 
-    #Mount NextCloud folders
-    mount_nextcloud('ncplants:/data_splits', '/srv/image-classification-tf/data/dataset_files/')
-    mount_nextcloud('ncplants:/plants_images', '/srv/image-classification-tf/data/images/')
+    # Mount NextCloud folders (if NextCloud is available)
+    try:
+        mount_nextcloud('ncplants:/data_splits', '/srv/image-classification-tf/data/dataset_files/')
+        mount_nextcloud('ncplants:/plants_images', '/srv/image-classification-tf/data/images/')
+    except Exception as e:
+        print(e)
 
     # Update the conf with the user input
     for group, val in sorted(CONF.items()):
@@ -313,8 +316,13 @@ def train(user_conf):
 
     config.print_conf_table(CONF)
     K.clear_session() # remove the model loaded for prediction
-    fpath=train_fn(TIMESTAMP=timestamp, CONF=CONF)
-    mount_nextcloud(fpath, 'ncplants:/output')
+    fpath = train_fn(TIMESTAMP=timestamp, CONF=CONF)
+    
+    # Mount NextCloud folders (if NextCloud is available)
+    try:
+        mount_nextcloud(fpath, 'ncplants:/output')
+    except Exception as e:
+        print(e)    
 
 @catch_error
 def get_train_args():
