@@ -20,7 +20,6 @@ gevent, uwsgi.
 
 import json
 import os
-import subprocess
 import tempfile
 import warnings
 from datetime import datetime
