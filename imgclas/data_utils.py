@@ -61,6 +61,15 @@ def load_data_splits(splits_dir, im_dir, split_name='train'):
 
     return X, y
 
+def mount_nextcloud(frompath, topath):
+
+    command = (['rclone', 'copy', frompath, topath])
+    result = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, error = result.communicate()
+
+    return output, error
+
+
 
 def load_class_names(splits_dir):
     """

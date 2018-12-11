@@ -35,7 +35,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras import backend as K
 
 from imgclas import paths, utils, config
-from imgclas.data_utils import load_class_names, load_class_info
+from imgclas.data_utils import load_class_names, load_class_info, mount_nextcloud
 from imgclas.test_utils import predict
 from imgclas.train_runfile import train_fn
 
@@ -148,32 +148,6 @@ def catch_localfile_error(file_list):
         if extension not in allowed_extensions:
             raise BadRequest("""Local image format error:
             At least one file is not in a standard image format (jpg|jpeg|png).""")
-
-
-@catch_error
-def from_nextcloud():
-
-    #Copy train.txt and classes.txt from NextCloud
-    command = (['rclone', 'copy', 'ncplants:/data_splits', '/srv/image-classification-tf/data/dataset_files/'])
-    result = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    output_splits, error_splits = result.communicate()
-
-    command = (['rclone', 'copy', 'ncplants:/plants_images', '/srv/image-classification-tf/data/images/'])
-    result = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    output_images, error_images = result.communicate()
-    
-    return output_images,error_images, output_splits, error_splits
-
-
-@catch_error
-def to_nextcloud(fpath):
-
-    #Copy train.txt and classes.txt from NextCloud
-    command = (['rclone', 'copy', fpath, 'ncplants:/output'])
-    result = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    output, error = result.communicate()
-    print("The error -------------->" , error)
-    return output,error
 
 
 @catch_error
@@ -319,9 +293,11 @@ def train(user_conf):
             user_conf={'num_classes': 'null', 'lr_step_decay': '0.1', 'lr_step_schedule': '[0.7, 0.9]', 'use_early_stopping': 'false'}
     """
     CONF = config.CONF
-    
+
     #Mount NextCloud folders
-    from_nextcloud()
+    mount_nextcloud('ncplants:/data_splits', '/srv/image-classification-tf/data/dataset_files/')
+    mount_nextcloud('ncplants:/plants_images', '/srv/image-classification-tf/data/images/')
+
     # Update the conf with the user input
     for group, val in sorted(CONF.items()):
         for g_key, g_val in sorted(val.items()):
@@ -339,7 +315,7 @@ def train(user_conf):
     config.print_conf_table(CONF)
     K.clear_session() # remove the model loaded for prediction
     fpath=train_fn(TIMESTAMP=timestamp, CONF=CONF)
-    to_nextcloud(fpath)
+    mount_nextcloud(fpath, 'ncplants:/output')
 
 @catch_error
 def get_train_args():
