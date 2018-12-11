@@ -41,8 +41,8 @@ from imgclas.train_runfile import train_fn
 
 # Mount NextCloud folders (if NextCloud is available)
 try:
-    mount_nextcloud('ncplants:/dataset_files', paths.get_splits_dir())
-    mount_nextcloud('ncplants:/images', paths.get_images_dir())
+    mount_nextcloud('ncplants:/data/dataset_files', paths.get_splits_dir())
+    mount_nextcloud('ncplants:/data/images', paths.get_images_dir())
     mount_nextcloud('ncplants:/models', paths.get_models_dir())
 except Exception as e:
     print(e)
