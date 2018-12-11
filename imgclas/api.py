@@ -47,62 +47,78 @@ try:
 except Exception as e:
     print(e)
 
-########################################################################################################################
-# Everything in this block of code is only used for prediction!!
+# Empty model variables for inference (will be loaded the first time we perform inference)
+loaded = False
+graph, model, conf, class_names, class_info = None, None, None, None, None
 
-# Set the timestamp
-timestamps = os.listdir(paths.get_models_dir())
-if not timestamps:
-    warnings.warn(
-        """No available model timestamps for prediction. Therefore the API can only be used for training.""")
-else:
-    if 'api' in timestamps:
-        TIMESTAMP = 'api'
-    else:
-        TIMESTAMP = sorted(timestamps)[-1]
-    paths.timestamp = TIMESTAMP
-    print('Using TIMESTAMP={}'.format(TIMESTAMP))
+# Additional parameters
+allowed_extensions = set(['png', 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG']) # allow only certain file extensions
+top_K = 5  # number of top classes predictions to return
 
-    # Set the checkpoint model to use to make the prediction
-    ckpts = os.listdir(paths.get_checkpoints_dir())
-    if not ckpts:
-        warnings.warn(
-            """No available model checkpoints for prediction. Therefore the API can only be used for training.""")
+
+def load_inference_model():
+    """
+    Load a model for prediction.
+
+    If several timestamps are available in `./models` it will load `.models/api` or the last timestamp if `api` is not
+    available.
+    If several checkpoints are available in `./models/[timestamp]/ckpts` it will load
+    `.models/[timestamp]/ckpts/final_model.h5` or the last checkpoint if `final_model.h5` is not available.
+    """
+    global loaded, graph, model, conf, class_names, class_info
+
+    # Set the timestamp
+    timestamps = next(os.walk(paths.get_models_dir()))[1]
+    if not timestamps:
+        raise BadRequest(
+            """You have no models in your `./models` folder to be used for inference.
+            Therefore the API can only be used for training.""")
     else:
-        if 'final_model.h5' in ckpts:
-            MODEL_NAME = 'final_model.h5'
+        if 'api' in timestamps:
+            TIMESTAMP = 'api'
         else:
-            MODEL_NAME = sorted([name for name in ckpts if name.endswith('*.h5')])[-1]
-        print('Using MODEL_NAME={}'.format(MODEL_NAME))
+            TIMESTAMP = sorted(timestamps)[-1]
+        paths.timestamp = TIMESTAMP
+        print('Using TIMESTAMP={}'.format(TIMESTAMP))
 
-        TOP_K = 5  # number of top classes predictions to save
+        # Set the checkpoint model to use to make the prediction
+        ckpts = os.listdir(paths.get_checkpoints_dir())
+        if not ckpts:
+            raise BadRequest(
+                """You have no checkpoints in your `./models/{}/ckpts` folder to be used for inference.
+                Therefore the API can only be used for training.""".format(TIMESTAMP))
+        else:
+            if 'final_model.h5' in ckpts:
+                MODEL_NAME = 'final_model.h5'
+            else:
+                MODEL_NAME = sorted([name for name in ckpts if name.endswith('*.h5')])[-1]
+            print('Using MODEL_NAME={}'.format(MODEL_NAME))
 
-        # Load the class names and info
-        splits_dir = paths.get_ts_splits_dir()
-        class_names = load_class_names(splits_dir=splits_dir)
-        class_info = None
-        if 'info.txt' in os.listdir(splits_dir):
-            class_info = load_class_info(splits_dir=splits_dir)
-            if len(class_info) != len(class_names):
-                warnings.warn("""The 'classes.txt' file has a different length than the 'info.txt' file.
-                If a class has no information whatsoever you should leave that classes row empty or put a '-' symbol.
-                The API will run with no info until this is solved.""")
-                class_info = None
-        if class_info is None:
-            class_info = ['' for _ in range(len(class_names))]
+            # Load the class names and info
+            splits_dir = paths.get_ts_splits_dir()
+            class_names = load_class_names(splits_dir=splits_dir)
+            class_info = None
+            if 'info.txt' in os.listdir(splits_dir):
+                class_info = load_class_info(splits_dir=splits_dir)
+                if len(class_info) != len(class_names):
+                    warnings.warn("""The 'classes.txt' file has a different length than the 'info.txt' file.
+                    If a class has no information whatsoever you should leave that classes row empty or put a '-' symbol.
+                    The API will run with no info until this is solved.""")
+                    class_info = None
+            if class_info is None:
+                class_info = ['' for _ in range(len(class_names))]
 
-        # Load training configuration
-        conf_path = os.path.join(paths.get_conf_dir(), 'conf.json')
-        with open(conf_path) as f:
-            conf = json.load(f)
+            # Load training configuration
+            conf_path = os.path.join(paths.get_conf_dir(), 'conf.json')
+            with open(conf_path) as f:
+                conf = json.load(f)
 
-        # Load the model
-        model = load_model(os.path.join(paths.get_checkpoints_dir(), MODEL_NAME), custom_objects=utils.get_custom_objects())
-        graph = tf.get_default_graph()
+            # Load the model
+            model = load_model(os.path.join(paths.get_checkpoints_dir(), MODEL_NAME), custom_objects=utils.get_custom_objects())
+            graph = tf.get_default_graph()
 
-        #Allow only certain file extensions
-        allowed_extensions = set(['png', 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG'])
-########################################################################################################################
+    # Set the model as loaded
+    loaded = True
 
 
 def catch_error(f):
@@ -112,13 +128,6 @@ def catch_error(f):
         except Exception as e:
             raise e
     return wrap
-
-
-def catch_no_models():
-    if not timestamps:
-        raise BadRequest('You have no models in your `./models` folder to be used for inference.')
-    if not ckpts:
-        raise BadRequest('You have no checkpoints in your `./models/{}/ckpts` folder to be used for inference.'.format(TIMESTAMP))
 
 
 def catch_url_error(url_list):
@@ -162,13 +171,15 @@ def predict_url(urls, merge=True):
     """
     Function to predict an url
     """
-    catch_no_models()
     catch_url_error(urls)
+
+    if not loaded:
+        load_inference_model()
     with graph.as_default():
         pred_lab, pred_prob = predict(model=model,
                                       X=urls,
                                       conf=conf,
-                                      top_K=TOP_K,
+                                      top_K=top_K,
                                       filemode='url',
                                       merge=merge)
 
@@ -183,13 +194,15 @@ def predict_file(filenames, merge=True):
     """
     Function to predict a local image
     """
-    catch_no_models()
     catch_localfile_error(filenames)
+
+    if not loaded:
+        load_inference_model()
     with graph.as_default():
         pred_lab, pred_prob = predict(model=model,
                                       X=filenames,
                                       conf=conf,
-                                      top_K=TOP_K,
+                                      top_K=top_K,
                                       filemode='local',
                                       merge=merge)
 
@@ -204,7 +217,8 @@ def predict_data(images, merge=True):
     """
     Function to predict an image in binary format
     """
-    catch_no_models()
+    if not loaded:
+        load_inference_model()
     if not isinstance(images, list):
         images = [images]
 
@@ -220,7 +234,7 @@ def predict_data(images, merge=True):
             pred_lab, pred_prob = predict(model=model,
                                           X=filenames,
                                           conf=conf,
-                                          top_K=TOP_K,
+                                          top_K=top_K,
                                           filemode='local',
                                           merge=merge)
     except Exception as e:
