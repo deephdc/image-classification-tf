@@ -161,7 +161,7 @@ def train_fn(TIMESTAMP, CONF):
     # model_utils.save_to_pb(model, fpath)
 
     print('Finished')
-    return fpath
+    return paths.get_timestamped_dir()
 
 if __name__ == '__main__':
 
