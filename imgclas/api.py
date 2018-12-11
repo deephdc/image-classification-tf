@@ -34,7 +34,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras import backend as K
 
 from imgclas import paths, utils, config
-from imgclas.data_utils import load_class_names, load_class_info
+from imgclas.data_utils import load_class_names, load_class_info, mount_nextcloud
 from imgclas.test_utils import predict
 from imgclas.train_runfile import train_fn
 
@@ -293,6 +293,13 @@ def train(user_conf):
     """
     CONF = config.CONF
 
+    # Mount NextCloud folders (if NextCloud is available)
+    try:
+        mount_nextcloud('ncplants:/data_splits', '/srv/image-classification-tf/data/dataset_files/')
+        mount_nextcloud('ncplants:/plants_images', '/srv/image-classification-tf/data/images/')
+    except Exception as e:
+        print(e)
+
     # Update the conf with the user input
     for group, val in sorted(CONF.items()):
         for g_key, g_val in sorted(val.items()):
@@ -309,8 +316,13 @@ def train(user_conf):
 
     config.print_conf_table(CONF)
     K.clear_session() # remove the model loaded for prediction
-    train_fn(TIMESTAMP=timestamp, CONF=CONF)
-
+    fpath = train_fn(TIMESTAMP=timestamp, CONF=CONF)
+    
+    # Mount NextCloud folders (if NextCloud is available)
+    try:
+        mount_nextcloud(fpath, 'ncplants:/output')
+    except Exception as e:
+        print(e)    
 
 @catch_error
 def get_train_args():
