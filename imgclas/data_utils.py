@@ -13,6 +13,7 @@ from multiprocessing import Pool
 import queue
 from urllib.request import urlopen
 import subprocess
+
 import numpy as np
 from tqdm import tqdm
 from tensorflow.keras.utils import to_categorical, Sequence
@@ -61,14 +62,16 @@ def load_data_splits(splits_dir, im_dir, split_name='train'):
 
     return X, y
 
-def mount_nextcloud(frompath, topath):
 
+def mount_nextcloud(frompath, topath):
+    """
+    Mount a NextCloud folder in your local machine or viceversa.
+    """
     command = (['rclone', 'copy', frompath, topath])
     result = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, error = result.communicate()
 
     return output, error
-
 
 
 def load_class_names(splits_dir):
