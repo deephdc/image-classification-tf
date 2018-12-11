@@ -320,7 +320,7 @@ def train(user_conf):
     
     # Mount NextCloud folders (if NextCloud is available)
     try:
-        mount_nextcloud(fpath, 'ncplants:/output')
+        mount_nextcloud(fpath, 'ncplants:/models')
     except Exception as e:
         print(e)    
 
