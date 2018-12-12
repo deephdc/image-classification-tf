@@ -94,6 +94,9 @@ def load_inference_model():
                 MODEL_NAME = sorted([name for name in ckpts if name.endswith('*.h5')])[-1]
             print('Using MODEL_NAME={}'.format(MODEL_NAME))
 
+            # Clear the previous loaded model
+            K.clear_session()
+
             # Load the class names and info
             splits_dir = paths.get_ts_splits_dir()
             class_names = load_class_names(splits_dir=splits_dir)
