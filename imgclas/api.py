@@ -330,7 +330,7 @@ def train(user_conf):
         raise BadRequest(e)
 
     CONF = config.conf_dict(conf=CONF)
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S').replace(' ', '_')
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H%M%S')
 
     config.print_conf_table(CONF)
     K.clear_session() # remove the model loaded for prediction
