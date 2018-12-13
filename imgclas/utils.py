@@ -8,14 +8,20 @@ Github: ignacioheredia
 """
 
 import os
+import subprocess
 from distutils.dir_util import copy_tree
+from multiprocessing import Process
 
 import numpy as np
+import tensorflow as tf
 from tensorflow.keras import callbacks
 from tensorflow.keras import backend as K
 
 from imgclas import paths
 from imgclas.optimizers import customSGD, customAdam, customAdamW
+
+
+tf.logging.set_verbosity(tf.logging.ERROR)
 
 
 def create_dir_tree():
@@ -92,6 +98,13 @@ class LRHistory(callbacks.Callback):
         super().on_epoch_end(epoch, logs)
 
 
+def launch_tensorboard(port=6006):
+    subprocess.call(['tensorboard',
+                     '--logdir', '{}'.format(paths.get_logs_dir()),
+                     '--port', '{}'.format(port),
+                     '--host', '0.0.0.0'])
+
+
 def get_callbacks(CONF, use_lr_decay=True):
     """
     Get a callback list to feed fit_generator.
@@ -121,9 +134,18 @@ def get_callbacks(CONF, use_lr_decay=True):
                                   epoch_milestones=milestones.tolist()))
 
     if CONF['monitor']['use_tensorboard']:
-        print('Monitor your training in Tensorboard by executing the following comand on your console:')
-        print('    tensorboard --logdir={}'.format(paths.get_logs_dir()))
         calls.append(callbacks.TensorBoard(log_dir=paths.get_logs_dir(), write_graph=False))
+
+        # # Let the user launch Tensorboard
+        # print('Monitor your training in Tensorboard by executing the following comand on your console:')
+        # print('    tensorboard --logdir={}'.format(paths.get_logs_dir()))
+
+        # Run Tensorboard  on a separate Thread/Process on behalf of the user
+        port = 6006
+        subprocess.run(['fuser', '-k', '{}/tcp'.format(port)]) # kill any previous process in that port
+        p = Process(target=launch_tensorboard, args=(port,), daemon=True)
+        p.start()
+
 
     if CONF['monitor']['use_remote']:
         calls.append(callbacks.RemoteMonitor())
