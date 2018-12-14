@@ -299,10 +299,16 @@ class ReLU(Layer):
   def __init__(self, max_value=None, **kwargs):
     super(ReLU, self).__init__(**kwargs)
     self.support_masking = True
+
+    ###################################################
+    # This is the modification with respect to the original code
+    # Original code: https://github.com/tensorflow/tensorflow/blob/r1.10/tensorflow/python/keras/layers/advanced_activations.py
+    # Issue: https://github.com/keras-team/keras/issues/7107#issuecomment-310632271
     try:
       self.max_value = K.cast_to_floatx(max_value)
     except TypeError:
       self.max_value = K.cast_to_floatx(max_value['value'])
+    ###################################################
 
     if self.max_value < 0.:
       raise ValueError('max_value of Relu layer '
