@@ -126,13 +126,6 @@ training:
           Frequency of the checkpoints (Float between 0 and 1). If None there will be no checkpoints saved. If 0 there
           will be 1 checkpoint per epoch. For example 0.1 means there will be 10 ckpts during the training.
 
-  class_weights_mode:
-    value:
-    type: "str"
-    choices: ["balanced", "log"]
-    help: >
-          Mode for the computation of the class weights. If None no class_weights will be used.
-
   lr_schedule_mode:
     value: "step"
     type: "str"
@@ -160,6 +153,12 @@ training:
     type: "float"
     help: >
           L2 regularizer for the two last Dense layers.
+
+  use_class_weights:
+    value: False
+    type: "bool"
+    help: >
+          Whether to use or not class_weights for the loss function computation.
 
   use_validation:
     value: True

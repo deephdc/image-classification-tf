@@ -70,10 +70,9 @@ def train_fn(TIMESTAMP, CONF):
         assert CONF['model']['num_classes'] >= np.amax(y_val), "Your val.txt file has more categories than those defined in classes.txt"
 
     # Compute the class weights
-    if CONF['training']['class_weights_mode'] is not None:
+    if CONF['training']['use_class_weights']:
         class_weights = compute_classweights(y_train,
-                                             max_dim=CONF['model']['num_classes'],
-                                             mode=CONF['training']['class_weights_mode'])
+                                             max_dim=CONF['model']['num_classes'])
     else:
         class_weights = None
 

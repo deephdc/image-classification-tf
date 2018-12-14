@@ -617,8 +617,8 @@ def compute_classweights(labels, max_dim=None, mode='balanced'):
     if mode == 'balanced':
         pass
     elif mode == 'log':
-        # weights = 1. + np.log(weights)
-        weights = np.log(weights)
+        # do not use --> produces numerical instabilities at inference when transferring weights trained on GPU to CPU
+        weights = np.log(weights) # + 1
     else:
         raise ValueError('{} is not a valid option for parameter "mode"'.format(mode))
 
