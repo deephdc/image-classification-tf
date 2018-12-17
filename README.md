@@ -3,7 +3,7 @@ DEEP Open Catalogue: Image classification
 
 **Author:** [Ignacio Heredia](https://github.com/IgnacioHeredia) (CSIC)
 
-**Project:** [DEEP Hybrid-DataCloud](https://deep-hybrid-datacloud.eu/)
+**Project:** This work is part of the [DEEP Hybrid-DataCloud](https://deep-hybrid-datacloud.eu/) project that has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No 777435.
 
 This is a plug-and-play tool to train and evaluate an image classifier on a custom dataset using deep neural networks.
 

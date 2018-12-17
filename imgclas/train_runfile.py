@@ -143,7 +143,8 @@ def train_fn(TIMESTAMP, CONF):
     print('Saving data to {} folder.'.format(paths.get_timestamped_dir()))
     print('Saving training stats ...')
     stats = {'epoch': history.epoch,
-             'training time (s)': round(time.time()-t0, 2)}
+             'training time (s)': round(time.time()-t0, 2),
+             'timestamp': TIMESTAMP}
     stats.update(history.history)
     stats_dir = paths.get_stats_dir()
     with open(os.path.join(stats_dir, 'stats.json'), 'w') as outfile:
