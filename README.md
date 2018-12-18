@@ -1,6 +1,9 @@
 DEEP Open Catalogue: Image classification
 ==============================
 
+[![Build Status](https://jenkins.indigo-datacloud.eu:8080/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/image-classification-tf/master)](https://jenkins.indigo-datacloud.eu:8080/job/Pipeline-as-code/job/DEEP-OC-org/job/image-classification-tf/job/master/)
+
+
 **Author:** [Ignacio Heredia](https://github.com/IgnacioHeredia) (CSIC)
 
 **Project:** This work is part of the [DEEP Hybrid-DataCloud](https://deep-hybrid-datacloud.eu/) project that has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No 777435.
