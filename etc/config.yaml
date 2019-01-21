@@ -108,7 +108,8 @@ training:
     type: "int"
     range: [1, 64]
     help: >
-          Batchsize to use during training.
+          Batchsize to use during training. If your model has a large number of classes (>1000) you might need to decrease
+          your batchsize so that the model still fits in the GPU.
 
   epochs:
     value: 30
@@ -157,7 +158,8 @@ training:
     value: False
     type: "bool"
     help: >
-          Whether to use or not class_weights for the loss function computation.
+          Whether to use or not class_weights for the loss function computation. It's sometimes useful when the dataset
+          classes are very imbalanced although it can make training more unstable.
 
   use_validation:
     value: True

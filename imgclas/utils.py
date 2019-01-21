@@ -13,15 +13,11 @@ from distutils.dir_util import copy_tree
 from multiprocessing import Process
 
 import numpy as np
-import tensorflow as tf
 from tensorflow.keras import callbacks
 from tensorflow.keras import backend as K
 
 from imgclas import paths
 from imgclas.optimizers import customSGD, customAdam, customAdamW
-
-
-tf.logging.set_verbosity(tf.logging.ERROR)
 
 
 def create_dir_tree():

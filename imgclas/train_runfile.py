@@ -28,10 +28,22 @@ import json
 from datetime import datetime
 
 import numpy as np
+import tensorflow as tf
+import tensorflow.keras.backend as K
 
 from imgclas.data_utils import load_data_splits, compute_meanRGB, compute_classweights, load_class_names, data_sequence
 from imgclas import paths, config, model_utils, utils
 from imgclas.optimizers import customAdam
+
+
+# Set Tensorflow verbosity logs
+tf.logging.set_verbosity(tf.logging.ERROR)
+
+# Dynamically grow the memory used on the GPU (https://github.com/keras-team/keras/issues/4161)
+gpu_options = tf.GPUOptions(allow_growth=True)
+tfconfig = tf.ConfigProto(gpu_options=gpu_options)
+sess = tf.Session(config=tfconfig)
+K.set_session(sess)
 
 
 def train_fn(TIMESTAMP, CONF):
@@ -62,6 +74,8 @@ def train_fn(TIMESTAMP, CONF):
 
     # Update the configuration
     CONF['model']['preprocess_mode'] = model_utils.model_modes[CONF['model']['modelname']]
+    CONF['training']['batch_size'] = min(CONF['training']['batch_size'], len(X_train))
+
     if CONF['model']['num_classes'] is None:
         CONF['model']['num_classes'] = len(class_names)
 
@@ -136,7 +150,7 @@ def train_fn(TIMESTAMP, CONF):
                                   validation_data=val_gen,
                                   validation_steps=val_steps,
                                   callbacks=utils.get_callbacks(CONF),
-                                  verbose=1, max_queue_size=10, workers=4,
+                                  verbose=1, max_queue_size=5, workers=4,
                                   use_multiprocessing=True, initial_epoch=0)
 
     # Saving everything

@@ -22,8 +22,6 @@ import albumentations
 from albumentations.augmentations import transforms
 from albumentations.imgaug import transforms as imgaug_transforms
 
-from imgclas import paths
-
 
 def load_data_splits(splits_dir, im_dir, split_name='train'):
     """
@@ -583,6 +581,10 @@ def compute_meanRGB(im_list, verbose=False, workers=4):
     r = np.asarray(r)
     mean, std = r[:, 0], r[:, 1]
     mean, std = np.mean(mean, axis=0), np.mean(std, axis=0)
+
+    print('Mean RGB pixel: {}'.format(mean.tolist()))
+    print('Standard deviation of RGB pixel: {}'.format(std.tolist()))
+
     return mean.tolist(), std.tolist()
 
 
