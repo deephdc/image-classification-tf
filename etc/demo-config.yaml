@@ -1,5 +1,4 @@
-# Demo configuration file for the image classification application
-# The configuration parameters used for the training must be changed in the config.yaml file.
+# Configuration file for the image classification application
 #
 # Date: September 2018
 # Author: Ignacio Heredia
@@ -105,11 +104,12 @@ training:
           Initial learning rate.
 
   batch_size:
-    value: 32
+    value: 16
     type: "int"
     range: [1, 64]
     help: >
-          Batchsize to use during training.
+          Batchsize to use during training. If your model has a large number of classes (>1000) you might need to decrease
+          your batchsize so that the model still fits in the GPU.
 
   epochs:
     value: 30
@@ -158,7 +158,8 @@ training:
     value: False
     type: "bool"
     help: >
-          Whether to use or not class_weights for the loss function computation.
+          Whether to use or not class_weights for the loss function computation. It's sometimes useful when the dataset
+          classes are very imbalanced although it can make training more unstable.
 
   use_validation:
     value: True
