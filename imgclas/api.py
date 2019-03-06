@@ -358,8 +358,8 @@ def get_train_args():
     """
     train_args = {}
     default_conf = config.CONF
-    for group, val in sorted(default_conf.items()):
-        for g_key, g_val in sorted(val.items()):
+    for group, val in default_conf.items():
+        for g_key, g_val in val.items():
             gg_keys = g_val.keys()
 
             # Load optional keys
@@ -368,7 +368,7 @@ def get_train_args():
             choices = g_val['choices'] if ('choices' in gg_keys) else None
 
             # Additional info in help string
-            help += '\n' + "Group name: {}".format(str(group))
+            help += '\n' + "Group name: **{}**".format(str(group))
             if choices: help += '\n' + "Choices: {}".format(str(choices))
             if type: help += '\n' + "Type: {}".format(g_val['type'])
 

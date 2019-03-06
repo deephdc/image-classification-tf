@@ -60,7 +60,7 @@ def train_fn(TIMESTAMP, CONF):
                                         split_name='train')
 
     # Load the validation data
-    if (CONF['training']['use_validation']) and ('val.txt' in os.listdir(paths.get_splits_dir())):
+    if (CONF['training']['use_validation']) and ('val.txt' in os.listdir(paths.get_ts_splits_dir())):
         X_val, y_val = load_data_splits(splits_dir=paths.get_ts_splits_dir(),
                                         im_dir=paths.get_images_dir(),
                                         split_name='val')
