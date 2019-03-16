@@ -68,7 +68,7 @@ def mount_nextcloud(frompath, topath):
     command = (['rclone', 'copy', frompath, topath])
     result = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, error = result.communicate()
-
+    print("Error in NextCloud :::::::::::::::::::: ", error)
     return output, error
 
 
