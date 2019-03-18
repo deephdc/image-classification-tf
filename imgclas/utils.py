@@ -139,9 +139,7 @@ def get_callbacks(CONF, use_lr_decay=True):
         try:
             port = int(subprocess.check_output(['bash','-c', 'echo $PORT1']))
         except:
-            port=6006
-
-        port=int(port)
+            port = 6006
         
         subprocess.run(['fuser', '-k', '{}/tcp'.format(port)]) # kill any previous process in that port
         p = Process(target=launch_tensorboard, args=(port,), daemon=True)
