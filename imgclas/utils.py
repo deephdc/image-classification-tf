@@ -135,9 +135,12 @@ def get_callbacks(CONF, use_lr_decay=True):
         # # Let the user launch Tensorboard
         # print('Monitor your training in Tensorboard by executing the following comand on your console:')
         # print('    tensorboard --logdir={}'.format(paths.get_logs_dir()))
-
         # Run Tensorboard  on a separate Thread/Process on behalf of the user
-        port = 6006
+        try:
+            port = int(subprocess.check_output(['bash','-c', 'echo $PORT1']))
+        except:
+            port = 6006
+        
         subprocess.run(['fuser', '-k', '{}/tcp'.format(port)]) # kill any previous process in that port
         p = Process(target=launch_tensorboard, args=(port,), daemon=True)
         p.start()
