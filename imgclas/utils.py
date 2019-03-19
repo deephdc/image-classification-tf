@@ -136,15 +136,11 @@ def get_callbacks(CONF, use_lr_decay=True):
         # print('Monitor your training in Tensorboard by executing the following comand on your console:')
         # print('    tensorboard --logdir={}'.format(paths.get_logs_dir()))
         # Run Tensorboard  on a separate Thread/Process on behalf of the user
-        try:
-            port = int(subprocess.check_output(['bash','-c', 'echo $PORT1']))
-        except:
-            port = 6006
-        
+        port = os.getenv('monitorPORT', 6006)
+        port = int(port) if len(str(port)) >= 4 else 6006
         subprocess.run(['fuser', '-k', '{}/tcp'.format(port)]) # kill any previous process in that port
         p = Process(target=launch_tensorboard, args=(port,), daemon=True)
         p.start()
-
 
     if CONF['monitor']['use_remote']:
         calls.append(callbacks.RemoteMonitor())
