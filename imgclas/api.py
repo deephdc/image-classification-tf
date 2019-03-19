@@ -25,6 +25,7 @@ import warnings
 from datetime import datetime
 import pkg_resources
 import builtins
+import re
 
 import numpy as np
 import requests
@@ -406,5 +407,11 @@ def get_metadata():
             if line.startswith(par):
                 _, value = line.split(": ", 1)
                 meta[par] = value
+
+    # Update information with Docker info (provided as 'CONTAINER_*' env variables)
+    r = re.compile("^CONTAINER_(.*?)$")
+    container_vars = list(filter(r.match, list(os.environ)))
+    for var in container_vars:
+        meta[var.capitalize()] = os.getenv(var)
 
     return meta
