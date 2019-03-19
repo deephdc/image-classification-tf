@@ -143,8 +143,6 @@ cd deepaas
 pip install -e .
 ```
 
-
-
 and run `deepaas-run --listen-ip 0.0.0.0`.
 From there you will be able to run training and predictions of this package  using `model_name=imgclas`.
 
