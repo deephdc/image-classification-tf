@@ -21,6 +21,7 @@ tutorials.
 #TODO: Try that everything works out with validation data
 #TODO: Try several regularization parameters
 #TODO: Add additional metrics for test time in addition to accuracy
+#TODO: Implement additional techniques to deal with class imbalance (not only class_weigths)
 
 import os
 import time
@@ -131,9 +132,10 @@ def train_fn(TIMESTAMP, CONF):
     top_vars = set(all_vars) - set(base_vars)
     top_vars = list(top_vars)
 
-    # # Set trainable variables
-    # for layer in base_model.layers:
-    #     layer.trainable = True
+    # Set trainable layers
+    if CONF['training']['mode'] == 'fast':
+        for layer in base_model.layers:
+            layer.trainable = False
 
     model.compile(optimizer=customAdam(lr=CONF['training']['initial_lr'],
                                        amsgrad=True,

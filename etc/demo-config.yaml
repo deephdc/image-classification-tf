@@ -97,6 +97,16 @@ dataset:
 
 training:
 
+  mode:
+    value: "normal"
+    type: "str"
+    choices: ['normal', 'fast']
+    help: >
+      Mode for the training routine. In the `fast` mode we do not training the lower layers convolutional layers and
+      only train the upper dense layer. The gain in training speed (~25% faster?) comes at the cost of a somewhat lower
+      accuracy, because the weights of the convolutional layers will be the ones from the Imagenet pretraining and thus
+      not finetuned to our dataset.
+
   initial_lr:
     value: 0.001
     type: "float"
@@ -112,7 +122,7 @@ training:
           your batchsize so that the model still fits in the GPU.
 
   epochs:
-    value: 30
+    value: 15
     type: "int"
     range: [0, None]
     help: >
@@ -123,7 +133,7 @@ training:
     type: "float"
     range: [0, 1]
     help: >
-          Frequency of the checkpoints (Float between 0 and 1). If None there will be no checkpoints saved. If 0 there
+          Frequency of the checkpoints (Float between 0 and 1). If None there will be no checkpoints saved. If 0.0 there
           will be 1 checkpoint per epoch. For example 0.1 means there will be 10 ckpts during the training.
 
   lr_schedule_mode:
@@ -204,7 +214,7 @@ augmentation:
       v_flip: 0.5
       rot: 0.7
       rot_lim: 90
-      stretch: 0.5
+      stretch: 0.0
       crop: 1.
       zoom: 0.2
       blur: 0.3
@@ -217,7 +227,8 @@ augmentation:
             - v_flip ([0,1] float): probability of performing an vertical up-down mirroring.
             - rot ([0,1] float):  probability of performing a rotation to the image.
             - rot_lim (int):  max degrees of rotation.
-            - stretch ([0,1] float):  probability of randomly stretching an image.
+            - stretch ([0,1] float):  probability of randomly stretching an image. It is set to zero by default because
+              on some datasets it can lead to nonsensical images.
             - crop ([0,1] float): randomly take an image crop.
             - zoom ([0,1] float): random zoom applied to crop_size.
                 --> Therefore the effective crop size at each iteration will be a

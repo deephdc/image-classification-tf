@@ -130,7 +130,7 @@ def catch_error(f):
         try:
             return f(*args, **kwargs)
         except Exception as e:
-            raise e
+            raise BadRequest(e)
     return wrap
 
 
