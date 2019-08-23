@@ -145,7 +145,7 @@ def catch_url_error(url_list):
         # Error catch: Inexistent url
         try:
             url_type = requests.head(i).headers.get('content-type')
-        except:
+        except Exception:
             raise BadRequest("""Failed url connection:
             Check you wrote the url address correctly.""")
 
@@ -159,29 +159,30 @@ def catch_url_error(url_list):
 def catch_localfile_error(file_list):
 
     # Error catch: Empty query
-    if not file_list[0].filename:
+    if not file_list:
         raise BadRequest('Empty query')
 
     # Error catch: Image format error
     for f in file_list:
-        extension = f.split('.')[-1]
+        extension = os.path.basename(f.filename).split('.')[-1]
+        # extension = mimetypes.guess_extension(f.content_type)
         if extension not in allowed_extensions:
             raise BadRequest("""Local image format error:
-            At least one file is not in a standard image format (jpg|jpeg|png).""")
+            At least one file is not in a standard image format ({}).""".format(allowed_extensions))
 
 
 @catch_error
-def predict_url(urls, merge=True):
+def predict_url(args, merge=True):
     """
     Function to predict an url
     """
-    catch_url_error(urls)
+    catch_url_error(args['urls'])
 
     if not loaded:
         load_inference_model()
     with graph.as_default():
         pred_lab, pred_prob = predict(model=model,
-                                      X=urls,
+                                      X=args['urls'],
                                       conf=conf,
                                       top_K=top_K,
                                       filemode='url',
@@ -194,39 +195,22 @@ def predict_url(urls, merge=True):
 
 
 @catch_error
-def predict_file(filenames, merge=True):
-    """
-    Function to predict a local image
-    """
-    catch_localfile_error(filenames)
-
-    if not loaded:
-        load_inference_model()
-    with graph.as_default():
-        pred_lab, pred_prob = predict(model=model,
-                                      X=filenames,
-                                      conf=conf,
-                                      top_K=top_K,
-                                      filemode='local',
-                                      merge=merge)
-
-    if merge:
-        pred_lab, pred_prob = np.squeeze(pred_lab), np.squeeze(pred_prob)
-
-    return format_prediction(pred_lab, pred_prob)
-
-
-@catch_error
-def predict_data(images, merge=True):
+def predict_data(args, merge=True):
     """
     Function to predict an image in binary format
     """
+    #####FIXME: Remove after DEEPaaS upgrade
+    if type(args['files']) is not list:
+        args['files'] = [args['files']]
+    ########################################
+
+    catch_localfile_error(args['files'])
+
     if not loaded:
         load_inference_model()
-    if not isinstance(images, list):
-        images = [images]
 
     filenames = []
+    images = [f.read() for f in args['files']]
     for image in images:
         f = tempfile.NamedTemporaryFile(delete=False)
         f.write(image)
