@@ -35,6 +35,10 @@ if os.path.isfile('secret_key.txt'):
 else:
     app.secret_key = 'devkey, should be in a file'
 
+# Load model
+if not api.loaded:
+    api.load_inference_model()
+
 # Create labels.html from synsets.txt
 webpage_utils.create_labels_html(labels=api.class_names)
 
@@ -59,9 +63,10 @@ def static_from_root():
 def url_post():
     url_list = request.form['url']
     url_list = [i.replace(' ', '') for i in url_list.split(' ') if i != '']
+    args = {'urls': url_list}
 
     try:
-        message = api.predict_url(url_list, merge=True)
+        message = api.predict_url(args, merge=True)
     except Exception as error:
         print(error)
         flash(Markup(error))
@@ -74,10 +79,11 @@ def url_post():
 @app.route('/local_upload', methods=['POST'])
 def local_post():
     uploaded_files = request.files.getlist('local_files')
-    uploaded_files = webpage_utils.filestorage_to_binary(uploaded_files)
+    # uploaded_files = webpage_utils.filestorage_to_binary(uploaded_files)
+    args = {'files': uploaded_files}
 
     try:
-        message = api.predict_data(images=uploaded_files)
+        message = api.predict_data(args)
     except Exception as error:
         print(error)
         flash(Markup(error))

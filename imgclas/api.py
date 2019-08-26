@@ -186,7 +186,8 @@ def predict_url(args, merge=True):
                                       conf=conf,
                                       top_K=top_K,
                                       filemode='url',
-                                      merge=merge)
+                                      merge=merge,
+                                      use_multiprocessing=False)  # safer to avoid memory fragmentation in failed queries
 
     if merge:
         pred_lab, pred_prob = np.squeeze(pred_lab), np.squeeze(pred_prob)
@@ -224,7 +225,8 @@ def predict_data(args, merge=True):
                                           conf=conf,
                                           top_K=top_K,
                                           filemode='local',
-                                          merge=merge)
+                                          merge=merge,
+                                          use_multiprocessing=False)  # safer to avoid memory fragmentation in failed queries
     except Exception as e:
         raise e
     finally:

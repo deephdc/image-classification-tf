@@ -12,7 +12,7 @@ import numpy as np
 from imgclas.data_utils import k_crop_data_sequence
 
 
-def predict(model, X, conf, top_K=None, crop_num=10, filemode='local', merge=False):
+def predict(model, X, conf, top_K=None, crop_num=10, filemode='local', merge=False, use_multiprocessing=True):
     """
     Predict function.
 
@@ -34,6 +34,8 @@ def predict(model, X, conf, top_K=None, crop_num=10, filemode='local', merge=Fal
         - 'url': filename is internet url.
     merge: Merge the predictions of all the images in the list. This value is tipically set to True when you pass
         multiple images of the same observation.
+    use_multiprocessing: bool
+       Use multiprocessing with the Keras generator.
 
     Returns
     -------
@@ -58,10 +60,11 @@ def predict(model, X, conf, top_K=None, crop_num=10, filemode='local', merge=Fal
                                     crop_number=crop_num,
                                     filemode=filemode)
 
-    output = model.predict_generator(generator=data_gen, verbose=1, max_queue_size=10, workers=4, use_multiprocessing=True)
+    output = model.predict_generator(generator=data_gen, verbose=1,
+                                     max_queue_size=10, workers=4, use_multiprocessing=use_multiprocessing)
 
-    output = output.reshape(len(X), -1, output.shape[-1]) # reshape to (N, crop_number, num_classes)
-    output = np.mean(output, axis=1) # take the mean across the crops
+    output = output.reshape(len(X), -1, output.shape[-1])  # reshape to (N, crop_number, num_classes)
+    output = np.mean(output, axis=1)  # take the mean across the crops
 
     if merge:
         output = np.mean(output, axis=0)  # take the mean across the images

@@ -11,11 +11,11 @@ import os
 import threading
 from multiprocessing import Pool
 import queue
-from urllib.request import urlopen
 import subprocess
 import warnings
 
 import numpy as np
+import requests
 from tqdm import tqdm
 from tensorflow.keras.utils import to_categorical, Sequence
 import cv2
@@ -123,7 +123,7 @@ def load_image(filename, filemode='local'):
 
     elif filemode == 'url':
         try:
-            data = urlopen(filename).read()
+            data = requests.get(filename).content
             data = np.frombuffer(data, np.uint8)
             image = cv2.imdecode(data, cv2.IMREAD_COLOR)
         except:
