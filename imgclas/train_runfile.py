@@ -182,7 +182,7 @@ def train_fn(TIMESTAMP, CONF):
 
 if __name__ == '__main__':
 
-    CONF = config.conf_dict()
+    CONF = config.get_conf_dict()
     timestamp = datetime.now().strftime('%Y-%m-%d_%H%M%S')
 
     train_fn(TIMESTAMP=timestamp, CONF=CONF)

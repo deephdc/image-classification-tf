@@ -259,3 +259,22 @@ augmentation:
     help: >
           Augmentation parameters to use during the validation/testing phase. The augmentation is smaller than in the
           case of training parameters. The meaning of the parameters is the same as in the train_mode option.
+
+
+#####################################################
+#  Options to test your model
+#####################################################
+
+testing:
+
+  timestamp:
+    value: "api"
+    type: "str"
+    help: >
+      Model timestamp to use for prediction.
+
+  ckpt_name:
+    value: "final_model.h5"
+    type: "str"
+    help: >
+      Checkpoint inside the timestamp to use for prediction.

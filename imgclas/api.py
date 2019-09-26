@@ -50,7 +50,7 @@ except Exception as e:
     print(e)
 
 # Empty model variables for inference (will be loaded the first time we perform inference)
-loaded = False
+loaded_ts, loaded_ckpt = None, None
 graph, model, conf, class_names, class_info = None, None, None, None, None
 
 # Additional parameters
@@ -58,72 +58,115 @@ allowed_extensions = set(['png', 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG']) # allow o
 top_K = 5  # number of top classes predictions to return
 
 
-def load_inference_model():
+def load_inference_model(timestamp='api', ckpt_name='final_model.h5'):
     """
     Load a model for prediction.
 
-    If several timestamps are available in `./models` it will load `.models/api` or the last timestamp if `api` is not
-    available.
-    If several checkpoints are available in `./models/[timestamp]/ckpts` it will load
-    `.models/[timestamp]/ckpts/final_model.h5` or the last checkpoint if `final_model.h5` is not available.
+    Parameters
+    ----------
+    * timestamp: str
+        Name of the timestamp to use. The default is `api` or the last timestamp in `./models` if `api` is not
+        available.
+    * ckpt_name: str
+        Name of the checkpoint to use. The default is `final_model.h5` or the last checkpoint in
+        `./models/[timestamp]/ckpts` if `final_model.h5` is not available.
     """
-    global loaded, graph, model, conf, class_names, class_info
+    global loaded_ts, loaded_ckpt
+    global graph, model, conf, class_names, class_info
 
     # Set the timestamp
-    timestamps = next(os.walk(paths.get_models_dir()))[1]
-    if not timestamps:
+    timestamp_list = next(os.walk(paths.get_models_dir()))[1]
+    timestamp_list = sorted(timestamp_list)
+    if not timestamp_list:
         raise BadRequest(
             """You have no models in your `./models` folder to be used for inference.
             Therefore the API can only be used for training.""")
-    else:
-        if 'api' in timestamps:
-            TIMESTAMP = 'api'
-        else:
-            TIMESTAMP = sorted(timestamps)[-1]
-        paths.timestamp = TIMESTAMP
-        print('Using TIMESTAMP={}'.format(TIMESTAMP))
+    elif timestamp not in timestamp_list:
+        # timestamp = timestamp_list[-1]
+        raise BadRequest(
+            """Invalid timestamp name: {}. Available timestamp names are: {}""".format(timestamp,
+                                                                                       timestamp_list))
+    paths.timestamp = timestamp
+    print('Using TIMESTAMP={}'.format(timestamp))
 
-        # Set the checkpoint model to use to make the prediction
-        ckpts = os.listdir(paths.get_checkpoints_dir())
-        if not ckpts:
-            raise BadRequest(
-                """You have no checkpoints in your `./models/{}/ckpts` folder to be used for inference.
-                Therefore the API can only be used for training.""".format(TIMESTAMP))
-        else:
-            if 'final_model.h5' in ckpts:
-                MODEL_NAME = 'final_model.h5'
-            else:
-                MODEL_NAME = sorted([name for name in ckpts if name.endswith('*.h5')])[-1]
-            print('Using MODEL_NAME={}'.format(MODEL_NAME))
+    # Set the checkpoint model to use to make the prediction
+    ckpt_list = os.listdir(paths.get_checkpoints_dir())
+    ckpt_list = sorted([name for name in ckpt_list if name.endswith('.h5')])
+    if not ckpt_list:
+        raise BadRequest(
+            """You have no checkpoints in your `./models/{}/ckpts` folder to be used for inference.
+            Therefore the API can only be used for training.""".format(timestamp))
+    elif ckpt_name not in ckpt_list:
+        # ckpt_name = ckpt_list[-1]
+        raise BadRequest(
+            """Invalid checkpoint name: {}. Available checkpoint names are: {}""".format(ckpt_name,
+                                                                                         ckpt_list))
+    print('Using CKPT_NAME={}'.format(ckpt_name))
 
-            # Clear the previous loaded model
-            K.clear_session()
+    # Clear the previous loaded model
+    K.clear_session()
 
-            # Load the class names and info
-            splits_dir = paths.get_ts_splits_dir()
-            class_names = load_class_names(splits_dir=splits_dir)
+    # Load the class names and info
+    splits_dir = paths.get_ts_splits_dir()
+    class_names = load_class_names(splits_dir=splits_dir)
+    class_info = None
+    if 'info.txt' in os.listdir(splits_dir):
+        class_info = load_class_info(splits_dir=splits_dir)
+        if len(class_info) != len(class_names):
+            warnings.warn("""The 'classes.txt' file has a different length than the 'info.txt' file.
+            If a class has no information whatsoever you should leave that classes row empty or put a '-' symbol.
+            The API will run with no info until this is solved.""")
             class_info = None
-            if 'info.txt' in os.listdir(splits_dir):
-                class_info = load_class_info(splits_dir=splits_dir)
-                if len(class_info) != len(class_names):
-                    warnings.warn("""The 'classes.txt' file has a different length than the 'info.txt' file.
-                    If a class has no information whatsoever you should leave that classes row empty or put a '-' symbol.
-                    The API will run with no info until this is solved.""")
-                    class_info = None
-            if class_info is None:
-                class_info = ['' for _ in range(len(class_names))]
+    if class_info is None:
+        class_info = ['' for _ in range(len(class_names))]
 
-            # Load training configuration
-            conf_path = os.path.join(paths.get_conf_dir(), 'conf.json')
-            with open(conf_path) as f:
-                conf = json.load(f)
+    # Load training configuration
+    conf_path = os.path.join(paths.get_conf_dir(), 'conf.json')
+    with open(conf_path) as f:
+        conf = json.load(f)
+        update_with_saved_conf(conf)
 
-            # Load the model
-            model = load_model(os.path.join(paths.get_checkpoints_dir(), MODEL_NAME), custom_objects=utils.get_custom_objects())
-            graph = tf.get_default_graph()
+    # Load the model
+    model = load_model(os.path.join(paths.get_checkpoints_dir(), ckpt_name),
+                       custom_objects=utils.get_custom_objects())
+    graph = tf.get_default_graph()
 
     # Set the model as loaded
-    loaded = True
+    loaded_ts = timestamp
+    loaded_ckpt = ckpt_name
+
+
+def update_with_saved_conf(saved_conf):
+    """
+    Update the default YAML configuration with the configuration saved from training
+    """
+    # Update the default conf with the user input
+    CONF = config.CONF
+    for group, val in sorted(CONF.items()):
+        if group in saved_conf.keys():
+            for g_key, g_val in sorted(val.items()):
+                if g_key in saved_conf[group].keys():
+                    g_val['value'] = saved_conf[group][g_key]
+
+    # Check and save the configuration
+    config.check_conf(conf=CONF)
+    config.conf_dict = config.get_conf_dict(conf=CONF)
+
+
+def update_with_query_conf(user_args):
+    """
+    Update the default YAML configuration with the user's input args from the API query
+    """
+    # Update the default conf with the user input
+    CONF = config.CONF
+    for group, val in sorted(CONF.items()):
+        for g_key, g_val in sorted(val.items()):
+            if g_key in user_args:
+                g_val['value'] = json.loads(user_args[g_key])
+
+    # Check and save the configuration
+    config.check_conf(conf=CONF)
+    config.conf_dict = config.get_conf_dict(conf=CONF)
 
 
 def catch_error(f):
@@ -173,14 +216,24 @@ def catch_localfile_error(file_list):
 
 
 @catch_error
-def predict_url(args, merge=True):
+def predict_url(args):
     """
     Function to predict an url
     """
+    # Check user configuration
+    update_with_query_conf(args)
+    conf = config.conf_dict
+
+    merge = True
     # catch_url_error(args['urls'])
 
-    if not loaded:
-        load_inference_model()
+    # Load model if needed
+    if loaded_ts != conf['testing']['timestamp'] or loaded_ckpt != conf['testing']['ckpt_name']:
+        load_inference_model(timestamp=conf['testing']['timestamp'],
+                             ckpt_name=conf['testing']['ckpt_name'])
+        conf = config.conf_dict
+
+    # Make the predictions
     with graph.as_default():
         pred_lab, pred_prob = predict(model=model,
                                       X=args['urls'],
@@ -197,15 +250,24 @@ def predict_url(args, merge=True):
 
 
 @catch_error
-def predict_data(args, merge=True):
+def predict_data(args):
     """
     Function to predict an image in binary format
     """
+    # Check user configuration
+    update_with_query_conf(args)
+    conf = config.conf_dict
+
+    merge = True
     catch_localfile_error(args['files'])
 
-    if not loaded:
-        load_inference_model()
+    # Load model if needed
+    if loaded_ts != conf['testing']['timestamp'] or loaded_ckpt != conf['testing']['ckpt_name']:
+        load_inference_model(timestamp=conf['testing']['timestamp'],
+                             ckpt_name=conf['testing']['ckpt_name'])
+        conf = config.conf_dict
 
+    # Write data to temporary files
     filenames = []
     images = [f.read() for f in args['files']]
     for image in images:
@@ -214,6 +276,7 @@ def predict_data(args, merge=True):
         f.close()
         filenames.append(f.name)
 
+    # Make the predictions
     try:
         with graph.as_default():
             pred_lab, pred_prob = predict(model=model,
@@ -238,7 +301,7 @@ def predict_data(args, merge=True):
 def format_prediction(labels, probabilities):
     d = {
         "status": "ok",
-         "predictions": [],
+        "predictions": [],
     }
 
     for label_id, prob in zip(labels, probabilities):
@@ -289,34 +352,16 @@ def metadata():
 
 
 @catch_error
-def train(user_conf):
+def train(args):
     """
-    Parameters
-    ----------
-    user_conf : dict
-        Json dict (created with json.dumps) with the user's configuration parameters that will replace the defaults.
-        Must be loaded with json.loads()
-        For example:
-            user_conf={'num_classes': 'null', 'lr_step_decay': '0.1', 'lr_step_schedule': '[0.7, 0.9]', 'use_early_stopping': 'false'}
+    Train an image classifier
     """
-    CONF = config.CONF
-
-    # Update the conf with the user input
-    for group, val in sorted(CONF.items()):
-        for g_key, g_val in sorted(val.items()):
-            g_val['value'] = json.loads(user_conf[g_key])
-
-    # Check the configuration
-    try:
-        config.check_conf(conf=CONF)
-    except Exception as e:
-        raise BadRequest(e)
-
-    CONF = config.conf_dict(conf=CONF)
+    update_with_query_conf(user_args=args)
+    CONF = config.conf_dict
     timestamp = datetime.now().strftime('%Y-%m-%d_%H%M%S')
 
     config.print_conf_table(CONF)
-    K.clear_session() # remove the model loaded for prediction
+    K.clear_session()  # remove the model loaded for prediction
     train_fn(TIMESTAMP=timestamp, CONF=CONF)
     
     # Sync with NextCloud folders (if NextCloud is available)
@@ -383,6 +428,21 @@ def get_train_args():
                                 ('augmentation', default_conf['augmentation'])])
     return get_args(default_conf)
 
+
+@catch_error
+def get_test_args():
+
+    default_conf = config.CONF
+    default_conf = OrderedDict([('testing', default_conf['testing'])])
+
+    # Add options for modelname
+    timestamp = default_conf['testing']['timestamp']
+    timestamp_list = next(os.walk(paths.get_models_dir()))[1]
+    if timestamp['value'] not in timestamp_list:
+        timestamp['value'] = sorted(timestamp_list)[-1]
+    timestamp['choices'] = timestamp_list
+
+    return get_args(default_conf)
 
 
 @catch_error

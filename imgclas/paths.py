@@ -15,7 +15,7 @@ from imgclas import config
 
 homedir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-CONF = config.conf_dict()
+CONF = config.get_conf_dict()
 timestamp = datetime.now().strftime('%Y-%m-%d_%H%M%S')
 
 def get_timestamp():

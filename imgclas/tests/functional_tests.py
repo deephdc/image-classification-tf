@@ -18,7 +18,7 @@ def test_predict_url():
 def test_predict_data():
     fpath = os.path.join(paths.get_base_dir(), 'data', 'samples', 'sample.jpg')
     file = FileStorage(open(fpath, 'rb'))
-    args = {'files': file}
+    args = {'files': [file]}
     results = predict_data(args)
 
 

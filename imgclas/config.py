@@ -67,7 +67,8 @@ def check_conf(conf=CONF):
 
 check_conf()
 
-def conf_dict(conf=CONF):
+
+def get_conf_dict(conf=CONF):
     """
     Return configuration as dict
     """
@@ -78,7 +79,9 @@ def conf_dict(conf=CONF):
             conf_d[group][g_key] = g_val['value']
     return conf_d
 
-conf_d = conf_dict()
+
+conf_dict = get_conf_dict()
+
 
 def print_full_conf(conf=CONF):
     """
@@ -100,7 +103,7 @@ def print_full_conf(conf=CONF):
             print('\n')
 
             
-def print_conf_table(conf=conf_d):
+def print_conf_table(conf=conf_dict):
     """
     Print configuration parameters in a table
     """
