@@ -185,19 +185,20 @@ def catch_url_error(url_list):
         raise BadRequest('Empty query')
 
     for i in url_list:
+        if not i.startswith('data:image'):  # don't do the checks for base64 encoded images
 
-        # Error catch: Inexistent url
-        try:
-            url_type = requests.head(i).headers.get('content-type')
-        except Exception:
-            raise BadRequest("""Failed url connection:
-            Check you wrote the url address correctly.""")
+            # Error catch: Inexistent url
+            try:
+                url_type = requests.head(i).headers.get('content-type')
+            except Exception:
+                raise BadRequest("""Failed url connection:
+                Check you wrote the url address correctly.""")
 
-        # Error catch: Wrong formatted urls
-        if url_type.split('/')[0] != 'image':
-            raise BadRequest("""Url image format error:
-            Some urls were not in image format.
-            Check you didn't uploaded a preview of the image rather than the image itself.""")
+            # Error catch: Wrong formatted urls
+            if url_type.split('/')[0] != 'image':
+                raise BadRequest("""Url image format error:
+                Some urls were not in image format.
+                Check you didn't uploaded a preview of the image rather than the image itself.""")
 
 
 def catch_localfile_error(file_list):
@@ -225,7 +226,7 @@ def predict_url(args):
     conf = config.conf_dict
 
     merge = True
-    # catch_url_error(args['urls'])
+    catch_url_error(args['urls'])
 
     # Load model if needed
     if loaded_ts != conf['testing']['timestamp'] or loaded_ckpt != conf['testing']['ckpt_name']:

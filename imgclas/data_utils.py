@@ -13,6 +13,7 @@ from multiprocessing import Pool
 import queue
 import subprocess
 import warnings
+import base64
 
 import numpy as np
 import requests
@@ -123,9 +124,14 @@ def load_image(filename, filemode='local'):
 
     elif filemode == 'url':
         try:
-            data = requests.get(filename).content
+            if filename.startswith('data:image'):  # base64 encoded string
+                data = base64.b64decode(filename.split(';base64,')[1])
+            else:  # normal url
+                data = requests.get(filename).content
             data = np.frombuffer(data, np.uint8)
             image = cv2.imdecode(data, cv2.IMREAD_COLOR)
+            if image is None:
+                raise Exception
         except:
             raise ValueError('Incorrect url path: \n {}'.format(filename))
 
