@@ -14,7 +14,10 @@ pipeline {
         author_email = "iheredia@ifca.unican.es"
         app_name = "image-classification-tf"
         job_location = "Pipeline-as-code/DEEP-OC-org/DEEP-OC-image-classification-tf/master"
-        job_location_test = "Pipeline-as-code/DEEP-OC-org/DEEP-OC-image-classification-tf/test"     
+        job_location_test = "Pipeline-as-code/DEEP-OC-org/DEEP-OC-image-classification-tf/test"
+
+        //Derived services
+        derived_job_locations = 'Pipeline-as-code/DEEP-OC-org/DEEP-OC-plants-classification-tf,Pipeline-as-code/DEEP-OC-org/DEEP-OC-conus-classification-tf,Pipeline-as-code/DEEP-OC-org/DEEP-OC-seeds-classification-tf,Pipeline-as-code/DEEP-OC-org/DEEP-OC-phytoplankton-classification-tf'
     }
 
     stages {
@@ -77,6 +80,26 @@ pipeline {
                     }
                     def job_result = JenkinsBuildJob(job_to_build)
                     job_result_url = job_result.absoluteUrl
+                }
+            }
+        }
+
+        stage("Re-build DEEP-OC Docker images for derived services") {
+            when {
+                anyOf {
+                   branch 'master'
+// For the time being, only execute this stage for the master branch
+//                    branch 'test'
+                   buildingTag()
+                }
+            }
+            steps {
+                script {
+                    derived_job_locations.tokenize(',').each { item ->
+                        job_to_build = "${item}/${env.BRANCH_NAME}"
+                        def job_result = JenkinsBuildJob(job_to_build)
+                        job_result_url = job_result.absoluteUrl
+                    }
                 }
             }
         }
