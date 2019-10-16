@@ -50,9 +50,8 @@ def check_conf(conf=CONF):
     for d_name in ['train_mode', 'val_mode']:
         d = conf['augmentation'][d_name]['value']
 
-        for k in []:
-            if type(d[k]) is not bool:
-                raise TypeError('The type of the {} key in the {} augmentation dict must be bool.'.format(k, d_name))
+        if d is None:
+            continue
 
         for k in ['h_flip', 'v_flip', 'stretch', 'crop', 'zoom', 'blur', 'pixel_noise', 'pixel_sat', 'cutout', 'rot']:
             if type(d[k]) is not float:

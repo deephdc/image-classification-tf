@@ -428,9 +428,12 @@ def get_test_args():
     # Add options for modelname
     timestamp = default_conf['testing']['timestamp']
     timestamp_list = next(os.walk(paths.get_models_dir()))[1]
-    if timestamp['value'] not in timestamp_list:
+    if not timestamp_list:
+        timestamp['value'] = ''
+    elif timestamp['value'] not in timestamp_list:
         timestamp['value'] = sorted(timestamp_list)[-1]
-    timestamp['choices'] = timestamp_list
+    if timestamp_list:
+        timestamp['choices'] = timestamp_list
 
     return get_args(default_conf)
 
