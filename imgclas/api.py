@@ -341,17 +341,6 @@ def wikipedia_link(pred_lab):
     return link
 
 
-def metadata():
-    d = {
-        "author": None,
-        "description": None,
-        "url": None,
-        "license": None,
-        "version": None,
-    }
-    return d
-
-
 @catch_error
 def train(args):
     """
@@ -447,14 +436,12 @@ def get_test_args():
 
 
 @catch_error
-def get_metadata():
+def get_metadata(distribution_name='image-classification-tf'):
     """
     Function to read metadata
     """
 
-    module = __name__.split('.', 1)
-
-    pkg = pkg_resources.get_distribution(module[0])
+    pkg = pkg_resources.get_distribution(distribution_name)
     meta = {
         'Name': None,
         'Version': None,
