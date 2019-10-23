@@ -145,7 +145,7 @@ def save_default_imagenet_model():
             CONF[k][i] = None
     CONF['augmentation']['train_mode'] = None
 
-    CONF['model']['modelname'] = 'ResNet50'
+    CONF['model']['modelname'] = 'Xception'
     CONF['model']['image_size'] = 224
     CONF['model']['preprocess_mode'] = model_modes[CONF['model']['modelname']]
     CONF['model']['num_classes'] = 1000
