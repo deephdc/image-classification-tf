@@ -30,14 +30,14 @@ from collections import OrderedDict
 
 import numpy as np
 import requests
+import werkzeug
 from werkzeug.exceptions import BadRequest
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras import backend as K
 
-from imgclas import paths, utils, config
+from imgclas import paths, utils, config, test_utils
 from imgclas.data_utils import load_class_names, load_class_info, mount_nextcloud
-from imgclas.test_utils import predict
 from imgclas.train_runfile import train_fn
 
 
@@ -217,6 +217,20 @@ def catch_localfile_error(file_list):
 
 
 @catch_error
+def predict(**args):
+
+    if (not any([args['urls'], args['files']]) or
+            all([args['urls'], args['files']])):
+        raise Exception("You must provide either 'url' or 'data' in the payload")
+
+    if args['files']:
+        args['files'] = [args['files']]
+        return predict_data(args)
+    elif args['urls']:
+        return predict_url(args)
+
+
+@catch_error
 def predict_url(args):
     """
     Function to predict an url
@@ -236,13 +250,13 @@ def predict_url(args):
 
     # Make the predictions
     with graph.as_default():
-        pred_lab, pred_prob = predict(model=model,
-                                      X=args['urls'],
-                                      conf=conf,
-                                      top_K=top_K,
-                                      filemode='url',
-                                      merge=merge,
-                                      use_multiprocessing=False)  # safer to avoid memory fragmentation in failed queries
+        pred_lab, pred_prob = test_utils.predict(model=model,
+                                                 X=args['urls'],
+                                                 conf=conf,
+                                                 top_K=top_K,
+                                                 filemode='url',
+                                                 merge=merge,
+                                                 use_multiprocessing=False)  # safer to avoid memory fragmentation in failed queries
 
     if merge:
         pred_lab, pred_prob = np.squeeze(pred_lab), np.squeeze(pred_prob)
@@ -280,13 +294,13 @@ def predict_data(args):
     # Make the predictions
     try:
         with graph.as_default():
-            pred_lab, pred_prob = predict(model=model,
-                                          X=filenames,
-                                          conf=conf,
-                                          top_K=top_K,
-                                          filemode='local',
-                                          merge=merge,
-                                          use_multiprocessing=False)  # safer to avoid memory fragmentation in failed queries
+            pred_lab, pred_prob = test_utils.predict(model=model,
+                                                     X=filenames,
+                                                     conf=conf,
+                                                     top_K=top_K,
+                                                     filemode='local',
+                                                     merge=merge,
+                                                     use_multiprocessing=False)  # safer to avoid memory fragmentation in failed queries
     except Exception as e:
         raise e
     finally:
@@ -342,7 +356,7 @@ def wikipedia_link(pred_lab):
 
 
 @catch_error
-def train(args):
+def train(**args):
     """
     Train an image classifier
     """
@@ -362,19 +376,10 @@ def train(args):
 
 
 @catch_error
-def get_args(default_conf):
+def populate_parser(parser, default_conf):
     """
-    Returns a dict of dicts with the following structure to feed the deepaas API parser:
-    { 'arg1' : {'default': '1',     #value must be a string (use json.dumps to convert Python objects)
-                'help': '',         #can be an empty string
-                'required': False   #bool
-                },
-      'arg2' : {...
-                },
-    ...
-    }
+    Returns a arg-parse like parser.
     """
-    args = OrderedDict()
     for group, val in default_conf.items():
         for g_key, g_val in val.items():
             gg_keys = g_val.keys()
@@ -402,12 +407,18 @@ def get_args(default_conf):
             #     opt_args['type'] = type # this breaks the submission because the json-dumping
             #                               => I'll type-check args inside the test_fn
 
-            args[g_key] = opt_args
-    return args
+            parser.add_argument(g_key,
+                                type=str,
+                                required=False,
+                                default=opt_args["default"],
+                                choices=None if not choices else opt_args["choices"],
+                                help=opt_args["help"])
+
+    return parser
 
 
 @catch_error
-def get_train_args():
+def add_train_args(parser):
 
     default_conf = config.CONF
     default_conf = OrderedDict([('general', default_conf['general']),
@@ -416,11 +427,12 @@ def get_train_args():
                                 ('monitor', default_conf['monitor']),
                                 ('dataset', default_conf['dataset']),
                                 ('augmentation', default_conf['augmentation'])])
-    return get_args(default_conf)
+
+    return populate_parser(parser, default_conf)
 
 
 @catch_error
-def get_test_args():
+def add_predict_args(parser):
 
     default_conf = config.CONF
     default_conf = OrderedDict([('testing', default_conf['testing'])])
@@ -435,7 +447,22 @@ def get_test_args():
     if timestamp_list:
         timestamp['choices'] = timestamp_list
 
-    return get_args(default_conf)
+    # Add data and url fields
+    parser.add_argument('data',
+                        help="Select the image you want to classify.",
+                        type=werkzeug.FileStorage,
+                        location="files",
+                        dest='files',
+                        required=False)
+
+    parser.add_argument('url',
+                        help="Select an URL of the image you want to classify.",
+                        type=str,
+                        dest='urls',
+                        required=False,
+                        action="append")
+
+    return populate_parser(parser, default_conf)
 
 
 @catch_error
