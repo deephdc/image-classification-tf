@@ -35,10 +35,13 @@ from werkzeug.exceptions import BadRequest
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras import backend as K
+from webargs import fields
 
 from imgclas import paths, utils, config, test_utils
 from imgclas.data_utils import load_class_names, load_class_info, mount_nextcloud
 from imgclas.train_runfile import train_fn
+
+# TODO: Remove Flask and Werzeug as requirements?
 
 
 # Mount NextCloud folders (if NextCloud is available)
@@ -78,12 +81,12 @@ def load_inference_model(timestamp='api', ckpt_name='final_model.h5'):
     timestamp_list = next(os.walk(paths.get_models_dir()))[1]
     timestamp_list = sorted(timestamp_list)
     if not timestamp_list:
-        raise BadRequest(
+        raise Exception(
             """You have no models in your `./models` folder to be used for inference.
             Therefore the API can only be used for training.""")
     elif timestamp not in timestamp_list:
         # timestamp = timestamp_list[-1]
-        raise BadRequest(
+        raise ValueError(
             """Invalid timestamp name: {}. Available timestamp names are: {}""".format(timestamp,
                                                                                        timestamp_list))
     paths.timestamp = timestamp
@@ -93,12 +96,12 @@ def load_inference_model(timestamp='api', ckpt_name='final_model.h5'):
     ckpt_list = os.listdir(paths.get_checkpoints_dir())
     ckpt_list = sorted([name for name in ckpt_list if name.endswith('.h5')])
     if not ckpt_list:
-        raise BadRequest(
+        raise Exception(
             """You have no checkpoints in your `./models/{}/ckpts` folder to be used for inference.
             Therefore the API can only be used for training.""".format(timestamp))
     elif ckpt_name not in ckpt_list:
         # ckpt_name = ckpt_list[-1]
-        raise BadRequest(
+        raise ValueError(
             """Invalid checkpoint name: {}. Available checkpoint names are: {}""".format(ckpt_name,
                                                                                          ckpt_list))
     print('Using CKPT_NAME={}'.format(ckpt_name))
@@ -169,20 +172,20 @@ def update_with_query_conf(user_args):
     config.conf_dict = config.get_conf_dict(conf=CONF)
 
 
-def catch_error(f):
-    def wrap(*args, **kwargs):
-        try:
-            return f(*args, **kwargs)
-        except Exception as e:
-            raise BadRequest(e)
-    return wrap
+# def catch_error(f):
+#     def wrap(*args, **kwargs):
+#         try:
+#             return f(*args, **kwargs)
+#         except Exception as e:
+#             raise BadRequest(e)
+#     return wrap
 
 
 def catch_url_error(url_list):
 
     # Error catch: Empty query
     if not url_list:
-        raise BadRequest('Empty query')
+        raise ValueError('Empty query')
 
     for i in url_list:
         if not i.startswith('data:image'):  # don't do the checks for base64 encoded images
@@ -191,12 +194,12 @@ def catch_url_error(url_list):
             try:
                 url_type = requests.head(i).headers.get('content-type')
             except Exception:
-                raise BadRequest("""Failed url connection:
+                raise ValueError("""Failed url connection:
                 Check you wrote the url address correctly.""")
 
             # Error catch: Wrong formatted urls
             if url_type.split('/')[0] != 'image':
-                raise BadRequest("""Url image format error:
+                raise ValueError("""Url image format error:
                 Some urls were not in image format.
                 Check you didn't uploaded a preview of the image rather than the image itself.""")
 
@@ -205,18 +208,18 @@ def catch_localfile_error(file_list):
 
     # Error catch: Empty query
     if not file_list:
-        raise BadRequest('Empty query')
+        raise ValueError('Empty query')
 
     # Error catch: Image format error
     for f in file_list:
         extension = os.path.basename(f.filename).split('.')[-1]
         # extension = mimetypes.guess_extension(f.content_type)
         if extension not in allowed_extensions:
-            raise BadRequest("""Local image format error:
+            raise ValueError("""Local image format error:
             At least one file is not in a standard image format ({}).""".format(allowed_extensions))
 
 
-@catch_error
+# @catch_error
 def predict(**args):
 
     if (not any([args['urls'], args['files']]) or
@@ -224,13 +227,14 @@ def predict(**args):
         raise Exception("You must provide either 'url' or 'data' in the payload")
 
     if args['files']:
-        args['files'] = [args['files']]
+        args['files'] = [args['files']]  # patch until list is available
         return predict_data(args)
     elif args['urls']:
+        args['urls'] = [args['urls']]  # patch until list is available
         return predict_url(args)
 
 
-@catch_error
+# @catch_error
 def predict_url(args):
     """
     Function to predict an url
@@ -264,7 +268,7 @@ def predict_url(args):
     return format_prediction(pred_lab, pred_prob)
 
 
-@catch_error
+# @catch_error
 def predict_data(args):
     """
     Function to predict an image in binary format
@@ -284,7 +288,7 @@ def predict_data(args):
 
     # Write data to temporary files
     filenames = []
-    images = [f.read() for f in args['files']]
+    images = [f.file.read() for f in args['files']]
     for image in images:
         f = tempfile.NamedTemporaryFile(delete=False)
         f.write(image)
@@ -355,7 +359,7 @@ def wikipedia_link(pred_lab):
     return link
 
 
-@catch_error
+# @catch_error
 def train(**args):
     """
     Train an image classifier
@@ -363,7 +367,6 @@ def train(**args):
     update_with_query_conf(user_args=args)
     CONF = config.conf_dict
     timestamp = datetime.now().strftime('%Y-%m-%d_%H%M%S')
-
     config.print_conf_table(CONF)
     K.clear_session()  # remove the model loaded for prediction
     train_fn(TIMESTAMP=timestamp, CONF=CONF)
@@ -375,7 +378,7 @@ def train(**args):
         print(e)    
 
 
-@catch_error
+# @catch_error
 def populate_parser(parser, default_conf):
     """
     Returns a arg-parse like parser.
@@ -407,19 +410,20 @@ def populate_parser(parser, default_conf):
             #     opt_args['type'] = type # this breaks the submission because the json-dumping
             #                               => I'll type-check args inside the test_fn
 
-            parser.add_argument(g_key,
-                                type=str,
-                                required=False,
-                                default=opt_args["default"],
-                                choices=None if not choices else opt_args["choices"],
-                                help=opt_args["help"])
+            parser[g_key] = fields.Str(required=False,
+                                       missing=opt_args["default"],
+                                       description=opt_args["help"],
+                                       enum=None if not choices else opt_args["choices"])
+            # add choices --> choices=None if not choices else opt_args["choices"],
+
 
     return parser
 
 
-@catch_error
-def add_train_args(parser):
+# @catch_error
+def get_train_args():
 
+    parser = OrderedDict()
     default_conf = config.CONF
     default_conf = OrderedDict([('general', default_conf['general']),
                                 ('model', default_conf['model']),
@@ -431,9 +435,10 @@ def add_train_args(parser):
     return populate_parser(parser, default_conf)
 
 
-@catch_error
-def add_predict_args(parser):
+# @catch_error
+def get_predict_args():
 
+    parser = OrderedDict()
     default_conf = config.CONF
     default_conf = OrderedDict([('testing', default_conf['testing'])])
 
@@ -448,24 +453,24 @@ def add_predict_args(parser):
         timestamp['choices'] = timestamp_list
 
     # Add data and url fields
-    parser.add_argument('data',
-                        help="Select the image you want to classify.",
-                        type=werkzeug.FileStorage,
-                        location="files",
-                        dest='files',
-                        required=False)
+    parser['files'] = fields.Field(required=False,
+                                   missing=None,
+                                   type="file",
+                                   data_key="data",
+                                   location="form",
+                                   description="Select the image you want to classify.")
 
-    parser.add_argument('url',
-                        help="Select an URL of the image you want to classify.",
-                        type=str,
-                        dest='urls',
-                        required=False,
-                        action="append")
+    # Use field.String instead of field.Url because I also want to allow uploading of base 64 encoded data strings
+    parser['urls'] = fields.String(required=False,
+                                   missing=None,
+                                   description="Select an URL of the image you want to classify.")
+
+    # missing action="append" --> append more than one url
 
     return populate_parser(parser, default_conf)
 
 
-@catch_error
+# @catch_error
 def get_metadata(distribution_name='image-classification-tf'):
     """
     Function to read metadata
