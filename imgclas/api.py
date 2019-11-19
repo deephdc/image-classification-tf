@@ -30,8 +30,6 @@ from collections import OrderedDict
 
 import numpy as np
 import requests
-import werkzeug
-from werkzeug.exceptions import BadRequest
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras import backend as K
@@ -40,8 +38,6 @@ from webargs import fields
 from imgclas import paths, utils, config, test_utils
 from imgclas.data_utils import load_class_names, load_class_info, mount_nextcloud
 from imgclas.train_runfile import train_fn
-
-# TODO: Remove Flask and Werzeug as requirements?
 
 
 # Mount NextCloud folders (if NextCloud is available)
@@ -172,15 +168,6 @@ def update_with_query_conf(user_args):
     config.conf_dict = config.get_conf_dict(conf=CONF)
 
 
-# def catch_error(f):
-#     def wrap(*args, **kwargs):
-#         try:
-#             return f(*args, **kwargs)
-#         except Exception as e:
-#             raise BadRequest(e)
-#     return wrap
-
-
 def catch_url_error(url_list):
 
     # Error catch: Empty query
@@ -212,14 +199,13 @@ def catch_localfile_error(file_list):
 
     # Error catch: Image format error
     for f in file_list:
-        extension = os.path.basename(f.filename).split('.')[-1]
+        extension = os.path.basename(f.content_type).split('/')[-1]
         # extension = mimetypes.guess_extension(f.content_type)
         if extension not in allowed_extensions:
             raise ValueError("""Local image format error:
             At least one file is not in a standard image format ({}).""".format(allowed_extensions))
 
 
-# @catch_error
 def predict(**args):
 
     if (not any([args['urls'], args['files']]) or
@@ -234,7 +220,6 @@ def predict(**args):
         return predict_url(args)
 
 
-# @catch_error
 def predict_url(args):
     """
     Function to predict an url
@@ -268,7 +253,6 @@ def predict_url(args):
     return format_prediction(pred_lab, pred_prob)
 
 
-# @catch_error
 def predict_data(args):
     """
     Function to predict an image in binary format
@@ -286,14 +270,8 @@ def predict_data(args):
                              ckpt_name=conf['testing']['ckpt_name'])
         conf = config.conf_dict
 
-    # Write data to temporary files
-    filenames = []
-    images = [f.file.read() for f in args['files']]
-    for image in images:
-        f = tempfile.NamedTemporaryFile(delete=False)
-        f.write(image)
-        f.close()
-        filenames.append(f.name)
+    # Create a list with the path to the images
+    filenames = [f.filename for f in args['files']]
 
     # Make the predictions
     try:
@@ -359,7 +337,6 @@ def wikipedia_link(pred_lab):
     return link
 
 
-# @catch_error
 def train(**args):
     """
     Train an image classifier
@@ -378,7 +355,6 @@ def train(**args):
         print(e)    
 
 
-# @catch_error
 def populate_parser(parser, default_conf):
     """
     Returns a arg-parse like parser.
@@ -412,15 +388,17 @@ def populate_parser(parser, default_conf):
 
             parser[g_key] = fields.Str(required=False,
                                        missing=opt_args["default"],
-                                       description=opt_args["help"],
-                                       enum=None if not choices else opt_args["choices"])
+                                       description=opt_args["help"])
             # add choices --> choices=None if not choices else opt_args["choices"],
 
+            # parser[g_key] = fields.Str(required=False,
+            #                            missing=opt_args["default"],
+            #                            description=opt_args["help"],
+            #                            enum=None if not choices else opt_args["choices"])
 
     return parser
 
 
-# @catch_error
 def get_train_args():
 
     parser = OrderedDict()
@@ -435,7 +413,6 @@ def get_train_args():
     return populate_parser(parser, default_conf)
 
 
-# @catch_error
 def get_predict_args():
 
     parser = OrderedDict()
@@ -470,7 +447,6 @@ def get_predict_args():
     return populate_parser(parser, default_conf)
 
 
-# @catch_error
 def get_metadata(distribution_name='image-classification-tf'):
     """
     Function to read metadata
