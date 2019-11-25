@@ -13,8 +13,7 @@ pipeline {
         author_name = "Ignacio Heredia (CSIC)"
         author_email = "iheredia@ifca.unican.es"
         app_name = "image-classification-tf"
-        job_location = "Pipeline-as-code/DEEP-OC-org/DEEP-OC-image-classification-tf/master"
-        job_location_test = "Pipeline-as-code/DEEP-OC-org/DEEP-OC-image-classification-tf/test"
+        job_location = "Pipeline-as-code/DEEP-OC-org/DEEP-OC-image-classification-tf/${env.BRANCH_NAME}"
     }
 
     stages {
@@ -60,8 +59,8 @@ pipeline {
             }
         }
 
-        stage("Re-build DEEP-OC-image-classification-tf Docker images") {
-              when {
+        stage("Re-build Docker images") {
+            when {
                 anyOf {
                    branch 'master'
                    branch 'test'
@@ -70,11 +69,7 @@ pipeline {
             }
             steps {
                 script {
-                    job_to_build = "${env.job_location}"
-                    if (env.BRANCH_NAME == 'test') {
-                       job_to_build = "${env.job_location_test}"
-                    }
-                    def job_result = JenkinsBuildJob(job_to_build)
+                    def job_result = JenkinsBuildJob("${env.job_location}")
                     job_result_url = job_result.absoluteUrl
                 }
             }
