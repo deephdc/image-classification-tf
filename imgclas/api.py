@@ -40,6 +40,16 @@ from imgclas.data_utils import load_class_names, load_class_info, mount_nextclou
 from imgclas.train_runfile import train_fn
 
 
+# TODO: Move to proper marshalling for arguments
+# The point is that some fields need additional information than the one that is contained in the config.yaml
+# --> define an example for each arg in the config.yaml --> create the schema for that arg
+# type_map = {'int': fields.Int, 'str': fields.Str, 'float': fields.Float, 'dict': fields.Dict,
+#             'bool': fields.Bool, 'list': fields.List}
+# field_type = type_map.get(g_val['type'], fields.Field)
+# parser[g_key] = field_type(**opt_args)
+# --> another option is to add a marshmallow schema to each config args
+
+
 # Mount NextCloud folders (if NextCloud is available)
 try:
     mount_nextcloud('ncplants:/data/dataset_files', paths.get_splits_dir())
@@ -377,24 +387,14 @@ def populate_parser(parser, default_conf):
             help += "</font>"
 
             # Create arg dict
-            opt_args = {'default': json.dumps(g_val['value']),
-                        'help': help,
-                        'required': False}
+            opt_args = {'missing': json.dumps(g_val['value']),
+                        'description': help,
+                        'required': False,
+                        }
             if choices:
-                opt_args['choices'] = [json.dumps(i) for i in choices]
-            # if type:
-            #     opt_args['type'] = type # this breaks the submission because the json-dumping
-            #                               => I'll type-check args inside the test_fn
+                opt_args['enum'] = [json.dumps(i) for i in choices]
 
-            parser[g_key] = fields.Str(required=False,
-                                       missing=opt_args["default"],
-                                       description=opt_args["help"])
-            # add choices --> choices=None if not choices else opt_args["choices"],
-
-            # parser[g_key] = fields.Str(required=False,
-            #                            missing=opt_args["default"],
-            #                            description=opt_args["help"],
-            #                            enum=None if not choices else opt_args["choices"])
+            parser[g_key] = fields.Str(**opt_args)
 
     return parser
 
