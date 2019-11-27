@@ -67,7 +67,7 @@ allowed_extensions = set(['png', 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG']) # allow o
 top_K = 5  # number of top classes predictions to return
 
 
-def load_inference_model(timestamp='api', ckpt_name='final_model.h5'):
+def load_inference_model(timestamp=None, ckpt_name=None):
     """
     Load a model for prediction.
 
@@ -90,8 +90,9 @@ def load_inference_model(timestamp='api', ckpt_name='final_model.h5'):
         raise Exception(
             """You have no models in your `./models` folder to be used for inference.
             Therefore the API can only be used for training.""")
+    elif timestamp is None:
+        timestamp = timestamp_list[-1]
     elif timestamp not in timestamp_list:
-        # timestamp = timestamp_list[-1]
         raise ValueError(
             """Invalid timestamp name: {}. Available timestamp names are: {}""".format(timestamp,
                                                                                        timestamp_list))
@@ -105,8 +106,9 @@ def load_inference_model(timestamp='api', ckpt_name='final_model.h5'):
         raise Exception(
             """You have no checkpoints in your `./models/{}/ckpts` folder to be used for inference.
             Therefore the API can only be used for training.""".format(timestamp))
+    elif ckpt_name is None:
+        ckpt_name = ckpt_list[-1]
     elif ckpt_name not in ckpt_list:
-        # ckpt_name = ckpt_list[-1]
         raise ValueError(
             """Invalid checkpoint name: {}. Available checkpoint names are: {}""".format(ckpt_name,
                                                                                          ckpt_list))
@@ -214,6 +216,10 @@ def catch_localfile_error(file_list):
         if extension not in allowed_extensions:
             raise ValueError("""Local image format error:
             At least one file is not in a standard image format ({}).""".format(allowed_extensions))
+
+
+def warm():
+    load_inference_model()
 
 
 def predict(**args):
@@ -422,11 +428,11 @@ def get_predict_args():
     # Add options for modelname
     timestamp = default_conf['testing']['timestamp']
     timestamp_list = next(os.walk(paths.get_models_dir()))[1]
+    timestamp_list = sorted(timestamp_list)
     if not timestamp_list:
         timestamp['value'] = ''
-    elif timestamp['value'] not in timestamp_list:
-        timestamp['value'] = sorted(timestamp_list)[-1]
-    if timestamp_list:
+    else:
+        timestamp['value'] = timestamp_list[-1]
         timestamp['choices'] = timestamp_list
 
     # Add data and url fields
