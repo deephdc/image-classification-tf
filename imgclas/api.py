@@ -361,7 +361,6 @@ def wikipedia_link(pred_lab):
     return link
 
 
-@catch_error
 def train(**args):
     """
     Train an image classifier
