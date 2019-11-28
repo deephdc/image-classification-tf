@@ -34,6 +34,7 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras import backend as K
 from webargs import fields
+from aiohttp.web import HTTPBadRequest
 
 from imgclas import paths, utils, config, test_utils
 from imgclas.data_utils import load_class_names, load_class_info, mount_nextcloud
@@ -88,14 +89,13 @@ def load_inference_model(timestamp=None, ckpt_name=None):
     timestamp_list = sorted(timestamp_list)
     if not timestamp_list:
         raise Exception(
-            """You have no models in your `./models` folder to be used for inference.
-            Therefore the API can only be used for training.""")
+            "You have no models in your `./models` folder to be used for inference. "
+            "Therefore the API can only be used for training.")
     elif timestamp is None:
         timestamp = timestamp_list[-1]
     elif timestamp not in timestamp_list:
         raise ValueError(
-            """Invalid timestamp name: {}. Available timestamp names are: {}""".format(timestamp,
-                                                                                       timestamp_list))
+            "Invalid timestamp name: {}. Available timestamp names are: {}".format(timestamp, timestamp_list))
     paths.timestamp = timestamp
     print('Using TIMESTAMP={}'.format(timestamp))
 
@@ -104,14 +104,13 @@ def load_inference_model(timestamp=None, ckpt_name=None):
     ckpt_list = sorted([name for name in ckpt_list if name.endswith('.h5')])
     if not ckpt_list:
         raise Exception(
-            """You have no checkpoints in your `./models/{}/ckpts` folder to be used for inference.
-            Therefore the API can only be used for training.""".format(timestamp))
+            "You have no checkpoints in your `./models/{}/ckpts` folder to be used for inference. ".format(timestamp) +
+            "Therefore the API can only be used for training.")
     elif ckpt_name is None:
         ckpt_name = ckpt_list[-1]
     elif ckpt_name not in ckpt_list:
         raise ValueError(
-            """Invalid checkpoint name: {}. Available checkpoint names are: {}""".format(ckpt_name,
-                                                                                         ckpt_list))
+            "Invalid checkpoint name: {}. Available checkpoint names are: {}".format(ckpt_name, ckpt_list))
     print('Using CKPT_NAME={}'.format(ckpt_name))
 
     # Clear the previous loaded model
@@ -180,6 +179,15 @@ def update_with_query_conf(user_args):
     config.conf_dict = config.get_conf_dict(conf=CONF)
 
 
+def catch_error(f):
+    def wrap(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except Exception as e:
+            raise HTTPBadRequest(reason=e)
+    return wrap
+
+
 def catch_url_error(url_list):
 
     # Error catch: Empty query
@@ -193,14 +201,13 @@ def catch_url_error(url_list):
             try:
                 url_type = requests.head(i).headers.get('content-type')
             except Exception:
-                raise ValueError("""Failed url connection:
-                Check you wrote the url address correctly.""")
+                raise ValueError("Failed url connection: "
+                                 "Check you wrote the url address correctly.")
 
             # Error catch: Wrong formatted urls
             if url_type.split('/')[0] != 'image':
-                raise ValueError("""Url image format error:
-                Some urls were not in image format.
-                Check you didn't uploaded a preview of the image rather than the image itself.""")
+                raise ValueError("Url image format error: Some urls were not in image format. "
+                                 "Check you didn't uploaded a preview of the image rather than the image itself.")
 
 
 def catch_localfile_error(file_list):
@@ -214,14 +221,15 @@ def catch_localfile_error(file_list):
         extension = os.path.basename(f.content_type).split('/')[-1]
         # extension = mimetypes.guess_extension(f.content_type)
         if extension not in allowed_extensions:
-            raise ValueError("""Local image format error:
-            At least one file is not in a standard image format ({}).""".format(allowed_extensions))
+            raise ValueError("Local image format error: "
+                             "At least one file is not in a standard image format ({}).".format(allowed_extensions))
 
 
 def warm():
     load_inference_model()
 
 
+@catch_error
 def predict(**args):
 
     if (not any([args['urls'], args['files']]) or
@@ -353,6 +361,7 @@ def wikipedia_link(pred_lab):
     return link
 
 
+@catch_error
 def train(**args):
     """
     Train an image classifier
