@@ -462,7 +462,7 @@ def get_predict_args():
     return populate_parser(parser, default_conf)
 
 
-def get_metadata(distribution_name='image-classification-tf'):
+def get_metadata(distribution_name='imgclas'):
     """
     Function to read metadata
     """
