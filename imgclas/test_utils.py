@@ -60,8 +60,11 @@ def predict(model, X, conf, top_K=None, crop_num=10, filemode='local', merge=Fal
                                     crop_number=crop_num,
                                     filemode=filemode)
 
-    output = model.predict_generator(generator=data_gen, verbose=1,
-                                     max_queue_size=10, workers=4, use_multiprocessing=use_multiprocessing)
+    output = model.predict(data_gen,
+                           verbose=1,
+                           max_queue_size=10,
+                           workers=4,
+                           use_multiprocessing=use_multiprocessing)
 
     output = output.reshape(len(X), -1, output.shape[-1])  # reshape to (N, crop_number, num_classes)
     output = np.mean(output, axis=1)  # take the mean across the crops
