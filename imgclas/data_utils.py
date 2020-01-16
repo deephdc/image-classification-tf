@@ -633,3 +633,20 @@ def compute_classweights(labels, max_dim=None, mode='balanced'):
         raise ValueError('{} is not a valid option for parameter "mode"'.format(mode))
 
     return weights.astype(np.float32)
+
+
+def json_friendly(d):
+    """
+    Return a json friendly dictionary (mainly remove numpy data types)
+    """
+    new_d = {}
+    for k, v in d.items():
+        if isinstance(v, (np.float32, np.float64)):
+            v = float(v)
+        elif isinstance(v, (np.ndarray, list)):
+            if isinstance(v[0], (np.float32, np.float64)):
+                v = np.array(v).astype(float).tolist()
+            else:
+                v = np.array(v).tolist()
+        new_d[k] = v
+    return new_d

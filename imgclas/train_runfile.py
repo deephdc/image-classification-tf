@@ -32,7 +32,8 @@ import numpy as np
 import tensorflow as tf
 import tensorflow.keras.backend as K
 
-from imgclas.data_utils import load_data_splits, compute_meanRGB, compute_classweights, load_class_names, data_sequence
+from imgclas.data_utils import load_data_splits, compute_meanRGB, compute_classweights, load_class_names, data_sequence, \
+    json_friendly
 from imgclas import paths, config, model_utils, utils
 from imgclas.optimizers import customAdam
 
@@ -162,6 +163,7 @@ def train_fn(TIMESTAMP, CONF):
              'training time (s)': round(time.time()-t0, 2),
              'timestamp': TIMESTAMP}
     stats.update(history.history)
+    stats = json_friendly(stats)
     stats_dir = paths.get_stats_dir()
     with open(os.path.join(stats_dir, 'stats.json'), 'w') as outfile:
         json.dump(stats, outfile, sort_keys=True, indent=4)
