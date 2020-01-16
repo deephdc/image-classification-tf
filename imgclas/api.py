@@ -20,7 +20,6 @@ gevent, uwsgi.
 
 import json
 import os
-import tempfile
 import warnings
 from datetime import datetime
 import pkg_resources
@@ -307,8 +306,6 @@ def predict_data(args):
                                                      filemode='local',
                                                      merge=merge,
                                                      use_multiprocessing=False)  # safer to avoid memory fragmentation in failed queries
-    except Exception as e:
-        raise e
     finally:
         for f in filenames:
             os.remove(f)

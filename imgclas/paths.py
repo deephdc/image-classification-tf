@@ -18,9 +18,6 @@ homedir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONF = config.get_conf_dict()
 timestamp = datetime.now().strftime('%Y-%m-%d_%H%M%S')
 
-def get_timestamp():
-    return timestamp
-
 
 def get_base_dir():
     base_dir = CONF['general']['base_directory']

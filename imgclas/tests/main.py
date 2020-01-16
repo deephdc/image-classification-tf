@@ -18,10 +18,10 @@ from imgclas import paths
 module_name = 'imgclas'
 test_url = 'https://file-examples.com/wp-content/uploads/2017/10/file_example_JPG_100kB.jpg'
 
+
 # ===========
 # Local Tests
 # ===========
-
 
 def test_load():
     print('Testing local: module load ...')
@@ -60,7 +60,6 @@ def test_predict_data():
 # CURL Tests
 # ==========
 
-
 def test_curl_load():
     print('Testing curl: module load ...')
 
@@ -86,8 +85,8 @@ def test_curl_predict_url():
     print('Testing curl: predict url ...')
     from urllib.parse import quote_plus
 
-    r = subprocess.run('curl -X POST "http://0.0.0.0:5000/v2/models/imgclas/predict/?urls={}" -H "accept: application/json"'.format(quote_plus(test_url)),
-                       shell=True, check=True, stdout=subprocess.PIPE).stdout
+    r = subprocess.run('curl -X POST "http://0.0.0.0:5000/v2/models/{}/predict/?urls={}" -H "accept: application/json"'.format(module_name,
+                                                                                                                               quote_plus(test_url)),                       shell=True, check=True, stdout=subprocess.PIPE).stdout
     if r == b'404: Not Found':
         raise Exception('Model is not correctly loaded.')
     r = json.loads(r)

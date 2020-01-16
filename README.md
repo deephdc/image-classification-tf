@@ -134,7 +134,6 @@ If you want to use the API for prediction,  you have to do some preliminary step
 
 #### Running the API
 
-
 To access this package's complete functionality (both for training and predicting) through an API you have to install the [DEEPaaS](https://github.com/indigo-dc/DEEPaaS) package:
 
 ```bash
