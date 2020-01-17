@@ -173,7 +173,7 @@ def train_fn(TIMESTAMP, CONF):
 
     print('Saving the model to h5...')
     fpath = os.path.join(paths.get_checkpoints_dir(), 'final_model.h5')
-    model.save(fpath=fpath,
+    model.save(fpath,
                include_optimizer=False)
 
     # print('Saving the model to protobuf...')
