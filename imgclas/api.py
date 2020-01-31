@@ -20,7 +20,6 @@ gevent, uwsgi.
 
 import json
 import os
-import tempfile
 import warnings
 from datetime import datetime
 import pkg_resources
@@ -30,15 +29,25 @@ from collections import OrderedDict
 
 import numpy as np
 import requests
-from werkzeug.exceptions import BadRequest
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras import backend as K
+from webargs import fields
+from aiohttp.web import HTTPBadRequest
 
-from imgclas import paths, utils, config
+from imgclas import paths, utils, config, test_utils
 from imgclas.data_utils import load_class_names, load_class_info, mount_nextcloud
-from imgclas.test_utils import predict
 from imgclas.train_runfile import train_fn
+
+
+# TODO: Move to proper marshalling for arguments
+# The point is that some fields need additional information than the one that is contained in the config.yaml
+# --> define an example for each arg in the config.yaml --> create the schema for that arg
+# type_map = {'int': fields.Int, 'str': fields.Str, 'float': fields.Float, 'dict': fields.Dict,
+#             'bool': fields.Bool, 'list': fields.List}
+# field_type = type_map.get(g_val['type'], fields.Field)
+# parser[g_key] = field_type(**opt_args)
+# --> another option is to add a marshmallow schema to each config args
 
 
 # Mount NextCloud folders (if NextCloud is available)
@@ -58,7 +67,7 @@ allowed_extensions = set(['png', 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG']) # allow o
 top_K = 5  # number of top classes predictions to return
 
 
-def load_inference_model(timestamp='api', ckpt_name='final_model.h5'):
+def load_inference_model(timestamp=None, ckpt_name=None):
     """
     Load a model for prediction.
 
@@ -78,14 +87,14 @@ def load_inference_model(timestamp='api', ckpt_name='final_model.h5'):
     timestamp_list = next(os.walk(paths.get_models_dir()))[1]
     timestamp_list = sorted(timestamp_list)
     if not timestamp_list:
-        raise BadRequest(
-            """You have no models in your `./models` folder to be used for inference.
-            Therefore the API can only be used for training.""")
+        raise Exception(
+            "You have no models in your `./models` folder to be used for inference. "
+            "Therefore the API can only be used for training.")
+    elif timestamp is None:
+        timestamp = timestamp_list[-1]
     elif timestamp not in timestamp_list:
-        # timestamp = timestamp_list[-1]
-        raise BadRequest(
-            """Invalid timestamp name: {}. Available timestamp names are: {}""".format(timestamp,
-                                                                                       timestamp_list))
+        raise ValueError(
+            "Invalid timestamp name: {}. Available timestamp names are: {}".format(timestamp, timestamp_list))
     paths.timestamp = timestamp
     print('Using TIMESTAMP={}'.format(timestamp))
 
@@ -93,14 +102,14 @@ def load_inference_model(timestamp='api', ckpt_name='final_model.h5'):
     ckpt_list = os.listdir(paths.get_checkpoints_dir())
     ckpt_list = sorted([name for name in ckpt_list if name.endswith('.h5')])
     if not ckpt_list:
-        raise BadRequest(
-            """You have no checkpoints in your `./models/{}/ckpts` folder to be used for inference.
-            Therefore the API can only be used for training.""".format(timestamp))
+        raise Exception(
+            "You have no checkpoints in your `./models/{}/ckpts` folder to be used for inference. ".format(timestamp) +
+            "Therefore the API can only be used for training.")
+    elif ckpt_name is None:
+        ckpt_name = ckpt_list[-1]
     elif ckpt_name not in ckpt_list:
-        # ckpt_name = ckpt_list[-1]
-        raise BadRequest(
-            """Invalid checkpoint name: {}. Available checkpoint names are: {}""".format(ckpt_name,
-                                                                                         ckpt_list))
+        raise ValueError(
+            "Invalid checkpoint name: {}. Available checkpoint names are: {}".format(ckpt_name, ckpt_list))
     print('Using CKPT_NAME={}'.format(ckpt_name))
 
     # Clear the previous loaded model
@@ -174,7 +183,7 @@ def catch_error(f):
         try:
             return f(*args, **kwargs)
         except Exception as e:
-            raise BadRequest(e)
+            raise HTTPBadRequest(reason=e)
     return wrap
 
 
@@ -182,7 +191,7 @@ def catch_url_error(url_list):
 
     # Error catch: Empty query
     if not url_list:
-        raise BadRequest('Empty query')
+        raise ValueError('Empty query')
 
     for i in url_list:
         if not i.startswith('data:image'):  # don't do the checks for base64 encoded images
@@ -191,32 +200,49 @@ def catch_url_error(url_list):
             try:
                 url_type = requests.head(i).headers.get('content-type')
             except Exception:
-                raise BadRequest("""Failed url connection:
-                Check you wrote the url address correctly.""")
+                raise ValueError("Failed url connection: "
+                                 "Check you wrote the url address correctly.")
 
             # Error catch: Wrong formatted urls
             if url_type.split('/')[0] != 'image':
-                raise BadRequest("""Url image format error:
-                Some urls were not in image format.
-                Check you didn't uploaded a preview of the image rather than the image itself.""")
+                raise ValueError("Url image format error: Some urls were not in image format. "
+                                 "Check you didn't uploaded a preview of the image rather than the image itself.")
 
 
 def catch_localfile_error(file_list):
 
     # Error catch: Empty query
     if not file_list:
-        raise BadRequest('Empty query')
+        raise ValueError('Empty query')
 
     # Error catch: Image format error
     for f in file_list:
-        extension = os.path.basename(f.filename).split('.')[-1]
+        extension = os.path.basename(f.content_type).split('/')[-1]
         # extension = mimetypes.guess_extension(f.content_type)
         if extension not in allowed_extensions:
-            raise BadRequest("""Local image format error:
-            At least one file is not in a standard image format ({}).""".format(allowed_extensions))
+            raise ValueError("Local image format error: "
+                             "At least one file is not in a standard image format ({}).".format(allowed_extensions))
+
+
+def warm():
+    load_inference_model()
 
 
 @catch_error
+def predict(**args):
+
+    if (not any([args['urls'], args['files']]) or
+            all([args['urls'], args['files']])):
+        raise Exception("You must provide either 'url' or 'data' in the payload")
+
+    if args['files']:
+        args['files'] = [args['files']]  # patch until list is available
+        return predict_data(args)
+    elif args['urls']:
+        args['urls'] = [args['urls']]  # patch until list is available
+        return predict_url(args)
+
+
 def predict_url(args):
     """
     Function to predict an url
@@ -236,13 +262,13 @@ def predict_url(args):
 
     # Make the predictions
     with graph.as_default():
-        pred_lab, pred_prob = predict(model=model,
-                                      X=args['urls'],
-                                      conf=conf,
-                                      top_K=top_K,
-                                      filemode='url',
-                                      merge=merge,
-                                      use_multiprocessing=False)  # safer to avoid memory fragmentation in failed queries
+        pred_lab, pred_prob = test_utils.predict(model=model,
+                                                 X=args['urls'],
+                                                 conf=conf,
+                                                 top_K=top_K,
+                                                 filemode='url',
+                                                 merge=merge,
+                                                 use_multiprocessing=False)  # safer to avoid memory fragmentation in failed queries
 
     if merge:
         pred_lab, pred_prob = np.squeeze(pred_lab), np.squeeze(pred_prob)
@@ -250,7 +276,6 @@ def predict_url(args):
     return format_prediction(pred_lab, pred_prob)
 
 
-@catch_error
 def predict_data(args):
     """
     Function to predict an image in binary format
@@ -268,27 +293,19 @@ def predict_data(args):
                              ckpt_name=conf['testing']['ckpt_name'])
         conf = config.conf_dict
 
-    # Write data to temporary files
-    filenames = []
-    images = [f.read() for f in args['files']]
-    for image in images:
-        f = tempfile.NamedTemporaryFile(delete=False)
-        f.write(image)
-        f.close()
-        filenames.append(f.name)
+    # Create a list with the path to the images
+    filenames = [f.filename for f in args['files']]
 
     # Make the predictions
     try:
         with graph.as_default():
-            pred_lab, pred_prob = predict(model=model,
-                                          X=filenames,
-                                          conf=conf,
-                                          top_K=top_K,
-                                          filemode='local',
-                                          merge=merge,
-                                          use_multiprocessing=False)  # safer to avoid memory fragmentation in failed queries
-    except Exception as e:
-        raise e
+            pred_lab, pred_prob = test_utils.predict(model=model,
+                                                     X=filenames,
+                                                     conf=conf,
+                                                     top_K=top_K,
+                                                     filemode='local',
+                                                     merge=merge,
+                                                     use_multiprocessing=False)  # safer to avoid memory fragmentation in failed queries
     finally:
         for f in filenames:
             os.remove(f)
@@ -341,15 +358,13 @@ def wikipedia_link(pred_lab):
     return link
 
 
-@catch_error
-def train(args):
+def train(**args):
     """
     Train an image classifier
     """
     update_with_query_conf(user_args=args)
     CONF = config.conf_dict
     timestamp = datetime.now().strftime('%Y-%m-%d_%H%M%S')
-
     config.print_conf_table(CONF)
     K.clear_session()  # remove the model loaded for prediction
     train_fn(TIMESTAMP=timestamp, CONF=CONF)
@@ -361,20 +376,10 @@ def train(args):
         print(e)    
 
 
-@catch_error
-def get_args(default_conf):
+def populate_parser(parser, default_conf):
     """
-    Returns a dict of dicts with the following structure to feed the deepaas API parser:
-    { 'arg1' : {'default': '1',     #value must be a string (use json.dumps to convert Python objects)
-                'help': '',         #can be an empty string
-                'required': False   #bool
-                },
-      'arg2' : {...
-                },
-    ...
-    }
+    Returns a arg-parse like parser.
     """
-    args = OrderedDict()
     for group, val in default_conf.items():
         for g_key, g_val in val.items():
             gg_keys = g_val.keys()
@@ -393,22 +398,21 @@ def get_args(default_conf):
             help += "</font>"
 
             # Create arg dict
-            opt_args = {'default': json.dumps(g_val['value']),
-                        'help': help,
-                        'required': False}
+            opt_args = {'missing': json.dumps(g_val['value']),
+                        'description': help,
+                        'required': False,
+                        }
             if choices:
-                opt_args['choices'] = [json.dumps(i) for i in choices]
-            # if type:
-            #     opt_args['type'] = type # this breaks the submission because the json-dumping
-            #                               => I'll type-check args inside the test_fn
+                opt_args['enum'] = [json.dumps(i) for i in choices]
 
-            args[g_key] = opt_args
-    return args
+            parser[g_key] = fields.Str(**opt_args)
+
+    return parser
 
 
-@catch_error
 def get_train_args():
 
+    parser = OrderedDict()
     default_conf = config.CONF
     default_conf = OrderedDict([('general', default_conf['general']),
                                 ('model', default_conf['model']),
@@ -416,30 +420,45 @@ def get_train_args():
                                 ('monitor', default_conf['monitor']),
                                 ('dataset', default_conf['dataset']),
                                 ('augmentation', default_conf['augmentation'])])
-    return get_args(default_conf)
+
+    return populate_parser(parser, default_conf)
 
 
-@catch_error
-def get_test_args():
+def get_predict_args():
 
+    parser = OrderedDict()
     default_conf = config.CONF
     default_conf = OrderedDict([('testing', default_conf['testing'])])
 
     # Add options for modelname
     timestamp = default_conf['testing']['timestamp']
     timestamp_list = next(os.walk(paths.get_models_dir()))[1]
+    timestamp_list = sorted(timestamp_list)
     if not timestamp_list:
         timestamp['value'] = ''
-    elif timestamp['value'] not in timestamp_list:
-        timestamp['value'] = sorted(timestamp_list)[-1]
-    if timestamp_list:
+    else:
+        timestamp['value'] = timestamp_list[-1]
         timestamp['choices'] = timestamp_list
 
-    return get_args(default_conf)
+    # Add data and url fields
+    parser['files'] = fields.Field(required=False,
+                                   missing=None,
+                                   type="file",
+                                   data_key="data",
+                                   location="form",
+                                   description="Select the image you want to classify.")
+
+    # Use field.String instead of field.Url because I also want to allow uploading of base 64 encoded data strings
+    parser['urls'] = fields.String(required=False,
+                                   missing=None,
+                                   description="Select an URL of the image you want to classify.")
+
+    # missing action="append" --> append more than one url
+
+    return populate_parser(parser, default_conf)
 
 
-@catch_error
-def get_metadata(distribution_name='image-classification-tf'):
+def get_metadata(distribution_name='imgclas'):
     """
     Function to read metadata
     """

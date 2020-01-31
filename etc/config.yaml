@@ -268,7 +268,7 @@ augmentation:
 testing:
 
   timestamp:
-    value: "api"
+    value:
     type: "str"
     help: >
       Model timestamp to use for prediction.

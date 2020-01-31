@@ -175,4 +175,5 @@ def save_default_imagenet_model():
     utils.create_dir_tree()
     np.savetxt(os.path.join(paths.get_ts_splits_dir(), 'classes.txt'), classes, fmt='%s', delimiter='/n')
     save_conf(CONF)
-    model.save(os.path.join(paths.get_checkpoints_dir(), 'final_model.h5'))
+    model.save(fpath=os.path.join(paths.get_checkpoints_dir(), 'final_model.h5'),
+               include_optimizer=False)
