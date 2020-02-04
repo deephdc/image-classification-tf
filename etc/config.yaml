@@ -243,6 +243,8 @@ augmentation:
             - pixel_sat ([0,1] float):  probability of randomly using HueSaturationValue in the image.
             - cutout ([0,1] float):  probability of using cutout in the image.
 
+          Use an empty dict {} in case you want to disable data augmentation.
+
   val_mode:
     value:
       h_flip: 0.5
@@ -259,6 +261,9 @@ augmentation:
     help: >
           Augmentation parameters to use during the validation/testing phase. The augmentation is smaller than in the
           case of training parameters. The meaning of the parameters is the same as in the train_mode option.
+
+          Use an empty dict {} in case you want to disable data augmentation.
+
 
 
 #####################################################
