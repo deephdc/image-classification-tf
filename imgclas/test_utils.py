@@ -12,7 +12,7 @@ import numpy as np
 from imgclas.data_utils import k_crop_data_sequence
 
 
-def predict(model, X, conf, top_K=None, crop_num=10, filemode='local', merge=False, use_multiprocessing=True):
+def predict(model, X, conf, top_K=None, crop_num=10, filemode='local', merge=False, use_multiprocessing=False):
     """
     Predict function.
 
