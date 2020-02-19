@@ -368,12 +368,14 @@ def train(**args):
     config.print_conf_table(CONF)
     K.clear_session()  # remove the model loaded for prediction
     train_fn(TIMESTAMP=timestamp, CONF=CONF)
-    
+
     # Sync with NextCloud folders (if NextCloud is available)
     try:
         mount_nextcloud(paths.get_models_dir(), 'rshare:/models')
     except Exception as e:
-        print(e)    
+        print(e)
+
+    return {'modelname': timestamp}
 
 
 def populate_parser(parser, default_conf):

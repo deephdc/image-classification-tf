@@ -183,6 +183,13 @@ training:
     help: >
           Whether to use or not early stopping. If True you have to provide a `val.txt` file in the `splits` directory.
 
+  use_multiprocessing:
+    value: True
+    type: "bool"
+    help: >
+          Whether to use or not multiple workers to do preprocess data (ie. do data augmentation)
+          faster during training. Disable it if your computing resources are scarce.
+
 #####################################################
 #  Options about monitoring your training
 #####################################################
@@ -190,7 +197,7 @@ training:
 monitor:
 
   use_tensorboard:
-    value: True
+    value: False
     type: "bool"
     help: >
           Use tensorboard to visualize the relevant metrics during the training process.
