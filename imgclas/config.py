@@ -45,12 +45,11 @@ def check_conf(conf=CONF):
                 if (g_val['range'][1] != 'None') and (g_val['range'][1] < g_val['value']):
                     raise ValueError('The selected value for {} is higher than the maximal possible value.'.format(g_key))
 
-                    
     # Check augmentation dict
     for d_name in ['train_mode', 'val_mode']:
         d = conf['augmentation'][d_name]['value']
 
-        if d is None:
+        if (d is None) or (not d):
             continue
 
         for k in ['h_flip', 'v_flip', 'stretch', 'crop', 'zoom', 'blur', 'pixel_noise', 'pixel_sat', 'cutout', 'rot']:
@@ -101,7 +100,7 @@ def print_full_conf(conf=CONF):
                 print(body)
             print('\n')
 
-            
+
 def print_conf_table(conf=conf_dict):
     """
     Print configuration parameters in a table
