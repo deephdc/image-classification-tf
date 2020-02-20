@@ -197,7 +197,7 @@ training:
 monitor:
 
   use_tensorboard:
-    value: False
+    value: True
     type: "bool"
     help: >
           Use tensorboard to visualize the relevant metrics during the training process.
