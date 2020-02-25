@@ -74,11 +74,9 @@ def load_inference_model(timestamp=None, ckpt_name=None):
     Parameters
     ----------
     * timestamp: str
-        Name of the timestamp to use. The default is `api` or the last timestamp in `./models` if `api` is not
-        available.
+        Name of the timestamp to use. The default is the last timestamp in `./models`.
     * ckpt_name: str
-        Name of the checkpoint to use. The default is `final_model.h5` or the last checkpoint in
-        `./models/[timestamp]/ckpts` if `final_model.h5` is not available.
+        Name of the checkpoint to use. The default is the last checkpoint in `./models/[timestamp]/ckpts`.
     """
     global loaded_ts, loaded_ckpt
     global graph, model, conf, class_names, class_info
@@ -317,26 +315,16 @@ def predict_data(args):
 
 
 def format_prediction(labels, probabilities):
-    d = {
-        "status": "ok",
-        "predictions": [],
-    }
 
-    for label_id, prob in zip(labels, probabilities):
-        name = class_names[label_id]
+    pred = {'labels': [class_names[i] for i in labels],
+            'probabilities': [float(p) for p in probabilities],
+            'labels_info': [class_info[i] for i in labels],
+            'links': {'Google Images': [image_link(class_names[i]) for i in labels],
+                      'Wikipedia': [wikipedia_link(class_names[i]) for i in labels]
+                      }
+            }
 
-        pred = {
-            "label_id": int(label_id),
-            "label": name,
-            "probability": float(prob),
-            "info": {
-                "links": {'Google images': image_link(name),
-                          'Wikipedia': wikipedia_link(name)},
-                'metadata': class_info[label_id],
-            },
-        }
-        d["predictions"].append(pred)
-    return d
+    return pred
 
 
 def image_link(pred_lab):
