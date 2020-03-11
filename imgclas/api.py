@@ -26,6 +26,7 @@ import pkg_resources
 import builtins
 import re
 from collections import OrderedDict
+from functools import wraps
 
 import numpy as np
 import requests
@@ -177,11 +178,15 @@ def update_with_query_conf(user_args):
 
 
 def catch_error(f):
+    @wraps(f)
     def wrap(*args, **kwargs):
         try:
-            return f(*args, **kwargs)
+            pred = f(*args, **kwargs)
+            return {'status': 'OK',
+                    'predictions': pred}
         except Exception as e:
-            raise HTTPBadRequest(reason=e)
+            return {'status': 'error',
+                    'message': str(e)}
     return wrap
 
 
@@ -477,3 +482,10 @@ def get_metadata(distribution_name='imgclas'):
         meta[var.capitalize()] = os.getenv(var)
 
     return meta
+
+
+schema = {
+    "status": fields.Str(),
+    "message": fields.Str(),
+    "predictions": fields.Field()
+}
