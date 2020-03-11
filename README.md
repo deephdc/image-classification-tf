@@ -11,8 +11,20 @@ received funding from the European Union’s Horizon 2020 research and innovatio
 
 This is a plug-and-play tool to train and evaluate an image classifier on a custom dataset using deep neural networks.
 
-You can find more information about it in the [DEEP Marketplace](https://marketplace.deep-hybrid-datacloud.eu/modules/train-an-image-classifier.html).
+You can find more information about it in the [DEEP Marketplace](https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-image-classification-tf.html).
 
+**Table of contents**
+1. [Installing this module](#installing-this-module)
+    1. [Local installation](#local-installation)
+    2. [Docker installation](#docker-installation)
+2. [Train other satellites](#train-an-image-classifier)
+    1. [Data preprocessing](#1-data-preprocessing)
+        1. [Prepare the images](#11-prepare-the-images)
+        2. [Prepare the data splits](#12-prepare-the-data-splits)
+    2. [Train the classifier](#train-an-image-classifier)
+3. [Test an image classifier](#test-an-image-classifier)
+4. [More info](#more-info)
+5. [Acknowledgements](#acknowledgments)
 
 ## Installing this module
 
@@ -110,7 +122,7 @@ OR
   that you can use for testing purposes.
 
 
-## Others
+## More info
 
 You can have more info on how to interact directly with the module (not through the DEEPaaS API) by examining the 
 ``./notebooks`` folder:
@@ -133,4 +145,11 @@ You can have more info on how to interact directly with the module (not through 
 
 ![Saliency maps](./reports/figures/demo-saliency.png)
 
-Finally you can [launch a simple webpage](./imgclas/webpage/README.md) to use the trained classifier to predict images (both local and urls) on your favorite brownser.
+Finally you can [launch a simple webpage](./imgclas/webpage/README.md) to use the trained classifier to predict images (both local and urls) on your favorite browser.
+
+
+## Acknowledgements
+
+If you consider this project to be useful, please consider citing the DEEP Hybrid DataCloud project:
+
+> García, Álvaro López, et al. [A Cloud-Based Framework for Machine Learning Workloads and Applications.](https://ieeexplore.ieee.org/abstract/document/8950411/authors) IEEE Access 8 (2020): 18681-18692. 
