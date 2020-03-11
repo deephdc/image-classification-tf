@@ -18,15 +18,15 @@ The fix done (using tf.get_default_graph()) will probably not be valid for stand
 gevent, uwsgi.
 """
 
+import builtins
+from collections import OrderedDict
+from datetime import datetime
+from functools import wraps
 import json
 import os
-import warnings
-from datetime import datetime
 import pkg_resources
-import builtins
 import re
-from collections import OrderedDict
-from functools import wraps
+import warnings
 
 import numpy as np
 import requests
@@ -34,7 +34,6 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras import backend as K
 from webargs import fields
-from aiohttp.web import HTTPBadRequest
 
 from imgclas import paths, utils, config, test_utils
 from imgclas.data_utils import load_class_names, load_class_info, mount_nextcloud
