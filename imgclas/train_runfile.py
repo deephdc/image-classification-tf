@@ -75,6 +75,7 @@ def train_fn(TIMESTAMP, CONF):
     class_names = load_class_names(splits_dir=paths.get_ts_splits_dir())
 
     # Update the configuration
+    CONF['model']['input_channels'] = np.load(X_train[0]).shape[2]
     CONF['model']['preprocess_mode'] = model_utils.model_modes[CONF['model']['modelname']]
     CONF['training']['batch_size'] = min(CONF['training']['batch_size'], len(X_train))
 
@@ -188,5 +189,9 @@ if __name__ == '__main__':
 
     CONF = config.get_conf_dict()
     timestamp = datetime.now().strftime('%Y-%m-%d_%H%M%S')
+
+    # CONF['general']['images_directory'] = 'data/samples'
+    # CONF['training']['use_multiprocessing'] = False
+    # CONF['model']['modelname'] = "MobileNet"
 
     train_fn(TIMESTAMP=timestamp, CONF=CONF)

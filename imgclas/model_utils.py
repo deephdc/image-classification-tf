@@ -41,7 +41,11 @@ def create_model(CONF):
 
     # create the base pre-trained model
     img_width, img_height = CONF['model']['image_size'], CONF['model']['image_size']
-    base_model = architecture(weights='imagenet', include_top=False, input_shape=(img_width, img_height, 3))
+
+    if CONF['model']['input_channels']==3:
+        base_model = architecture(weights='imagenet', include_top=False, input_shape=(img_width, img_height, 3))
+    else:
+        base_model = architecture(weights=None, include_top=False, input_shape=(img_width, img_height, 1))
 
     # Add custom layers at the top to adapt it to our problem
     x = base_model.output

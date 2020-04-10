@@ -3,6 +3,19 @@ DEEP Open Catalogue: Image classification
 
 [![Build Status](https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/image-classification-tf/master)](https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/image-classification-tf/job/master/)
 
+---
+> This branch is experimental work on supporting uint16 input (instead of classical images with uint8).
+> This done to support image classification with DICOM data.
+
+Changes with respect to master:
+* now *.txt files must point to .npy uint 16 files (instead of images) of shape (H, W, C).
+* It is possible to use this branch with an arbitrary number of channels C. If C is different from 3 finetuning
+ from ImageNet weigths is no longer available.
+* data augmentation is no longer supported
+* url disabled
+* api doesn't check for image format
+
+---
 
 **Author:** [Ignacio Heredia](https://github.com/IgnacioHeredia) (CSIC)
 

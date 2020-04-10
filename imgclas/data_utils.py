@@ -111,34 +111,23 @@ def load_image(filename, filemode='local'):
         Path or url to the image
     filemode : {'local','url'}
         - 'local': filename is absolute path in local disk.
-        - 'url': filename is internet url.
+        - 'url': filename is internet url.mread(filename, cv2.IMREAD_COLOR)
 
     Returns
     -------
     A numpy array
     """
     if filemode == 'local':
-        image = cv2.imread(filename, cv2.IMREAD_COLOR)
+        image = np.load(filename)
         if image is None:
-            raise ValueError('The local path does not exist or does not correspond to an image: \n {}'.format(filename))
+            raise ValueError('The local path does not exist or does not correspond to a npy file: \n {}'.format(filename))
 
     elif filemode == 'url':
-        try:
-            if filename.startswith('data:image'):  # base64 encoded string
-                data = base64.b64decode(filename.split(';base64,')[1])
-            else:  # normal url
-                data = requests.get(filename).content
-            data = np.frombuffer(data, np.uint8)
-            image = cv2.imdecode(data, cv2.IMREAD_COLOR)
-            if image is None:
-                raise Exception
-        except:
-            raise ValueError('Incorrect url path: \n {}'.format(filename))
+        raise Exception('Model "url" disabled in the uint16 branch')
 
     else:
         raise ValueError('Invalid value for filemode.')
 
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # change from default BGR OpenCV format to Python's RGB format
     return image
 
 
@@ -422,8 +411,8 @@ class data_sequence(Sequence):
         batch_X = []
         for i in batch_idxs:
             im = load_image(self.inputs[i])
-            if self.aug_params:
-                im = augment(im, params=self.aug_params)
+            # if self.aug_params:
+            #     im = augment(im, params=self.aug_params)
             im = resize_im(im, height=self.im_size, width=self.im_size)
             batch_X.append(im)  # shape (N, 224, 224, 3)
         batch_X = preprocess_batch(batch=batch_X, mean_RGB=self.mean_RGB, std_RGB=self.std_RGB, mode=self.preprocess_mode)

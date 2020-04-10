@@ -241,6 +241,7 @@ def predict(**args):
         args['files'] = [args['files']]  # patch until list is available
         return predict_data(args)
     elif args['urls']:
+        raise Exception('URL prediction disabled')
         args['urls'] = [args['urls']]  # patch until list is available
         return predict_url(args)
 
@@ -287,7 +288,7 @@ def predict_data(args):
     conf = config.conf_dict
 
     merge = True
-    catch_localfile_error(args['files'])
+    # catch_localfile_error(args['files'])
 
     # Load model if needed
     if loaded_ts != conf['testing']['timestamp'] or loaded_ckpt != conf['testing']['ckpt_name']:

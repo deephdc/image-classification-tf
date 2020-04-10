@@ -55,7 +55,7 @@ def predict(model, X, conf, top_K=None, crop_num=10, filemode='local', merge=Fal
                                     mean_RGB=conf['dataset']['mean_RGB'],
                                     std_RGB=conf['dataset']['std_RGB'],
                                     preprocess_mode=conf['model']['preprocess_mode'],
-                                    aug_params=conf['augmentation']['val_mode'],
+                                    aug_params={},
                                     crop_mode='random',
                                     crop_number=crop_num,
                                     filemode=filemode)
