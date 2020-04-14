@@ -420,14 +420,20 @@ class data_sequence(Sequence):
     def __getitem__(self, idx):
         batch_idxs = self.indexes[idx*self.batch_size: (idx+1)*self.batch_size]
         batch_X = []
+        tmp_idxs = []
         for i in batch_idxs:
-            im = load_image(self.inputs[i])
+            try:
+                im = load_image(self.inputs[i])
+            except Exception as e:
+                print(e)
+                continue
             if self.aug_params:
                 im = augment(im, params=self.aug_params)
             im = resize_im(im, height=self.im_size, width=self.im_size)
             batch_X.append(im)  # shape (N, 224, 224, 3)
+            tmp_idxs.append(i)
         batch_X = preprocess_batch(batch=batch_X, mean_RGB=self.mean_RGB, std_RGB=self.std_RGB, mode=self.preprocess_mode)
-        batch_y = to_categorical(self.targets[batch_idxs], num_classes=self.num_classes)
+        batch_y = to_categorical(self.targets[tmp_idxs], num_classes=self.num_classes)
         return batch_X, batch_y
 
     def on_epoch_end(self):
