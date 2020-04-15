@@ -14,6 +14,6 @@ Flask>=1.0.2
 gunicorn>=19.9.0
 seaborn>=0.8.1
 scikit-learn>=0.19.1
-webargs>=5.5.2
+webargs>=5.5.2,<6.0.0
 aiohttp>=3.6.2
 deepaas>=1.0.0
