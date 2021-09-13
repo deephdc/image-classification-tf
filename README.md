@@ -45,8 +45,8 @@ To start using this framework clone the repo and download the [default weights](
 git clone https://github.com/deephdc/image-classification-tf
 cd image-classification-tf
 pip install -e .
-curl -o ./models/default.tar.gz https://cephrgw01.ifca.es:8080/swift/v1/imagenet-tf/default_imagenet.tar.xz
-cd models && tar -zxvf default_imagenet.tar.gz && rm default_imagenet.tar.gz
+curl -o ./models/default_imagenet.tar.xz https://cephrgw01.ifca.es:8080/swift/v1/imagenet-tf/default_imagenet.tar.xz
+cd models && tar -xf default_imagenet.tar.xz && rm default_imagenet.tar.xz
 ```
 now run DEEPaaS:
 ```
