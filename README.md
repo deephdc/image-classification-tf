@@ -42,6 +42,8 @@ You can find more information about it in the [DEEP Marketplace](https://marketp
 To start using this framework clone the repo and download the [default weights](https://cephrgw01.ifca.es:8080/swift/v1/imagenet-tf/default_imagenet.tar.xz):
 
 ```bash
+# First line installs OpenCV requirement
+apt-get update && apt-get install -y libgl1
 git clone https://github.com/deephdc/image-classification-tf
 cd image-classification-tf
 pip install -e .
