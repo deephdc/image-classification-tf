@@ -17,7 +17,7 @@ You can find more information about it in the [DEEP Marketplace](https://marketp
 1. [Installing this module](#installing-this-module)
     1. [Local installation](#local-installation)
     2. [Docker installation](#docker-installation)
-2. [Train other satellites](#train-an-image-classifier)
+2. [Train a new image classifier](#train-an-image-classifier)
     1. [Data preprocessing](#1-data-preprocessing)
         1. [Prepare the images](#11-prepare-the-images)
         2. [Prepare the data splits](#12-prepare-the-data-splits)
