@@ -47,7 +47,7 @@ apt-get update && apt-get install -y libgl1
 git clone https://github.com/deephdc/image-classification-tf
 cd image-classification-tf
 pip install -e .
-curl -o ./models/default_imagenet.tar.xz https://cephrgw01.ifca.es:8080/swift/v1/imagenet-tf/default_imagenet.tar.xz
+curl -o ./models/default_imagenet.tar.xz https://api.cloud.ifca.es:8080/swift/v1/imagenet-tf/default_imagenet.tar.xz
 cd models && tar -xf default_imagenet.tar.xz && rm default_imagenet.tar.xz
 ```
 now run DEEPaaS:
