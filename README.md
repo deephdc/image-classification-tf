@@ -39,7 +39,7 @@ You can find more information about it in the [DEEP Marketplace](https://marketp
 > - Run `python -c 'import cv2'` to check that you installed correctly the `opencv-python` package (sometimes
 > [dependencies are missed](https://stackoverflow.com/questions/47113029/importerror-libsm-so-6-cannot-open-shared-object-file-no-such-file-or-directo) in `pip` installations).
 
-To start using this framework clone the repo and download the [default weights](https://cephrgw01.ifca.es:8080/swift/v1/imagenet-tf/default_imagenet.tar.xz):
+To start using this framework clone the repo and download the [default weights](https://api.cloud.ifca.es:8080/swift/v1/imagenet-tf/default_imagenet.tar.xz):
 
 ```bash
 # First line installs OpenCV requirement
