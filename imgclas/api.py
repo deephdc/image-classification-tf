@@ -291,7 +291,8 @@ def predict_data(args):
 
     merge = True
     catch_localfile_error(args['files'])
-
+    # print("args: ", args)
+    # print("args: ", args['files'])
     # Load model if needed
     if loaded_ts != conf['testing']['timestamp'] or loaded_ckpt != conf['testing']['ckpt_name']:
         load_inference_model(timestamp=conf['testing']['timestamp'],
@@ -300,6 +301,7 @@ def predict_data(args):
 
     # Create a list with the path to the images
     filenames = [f.filename for f in args['files']]
+    original_filename=[f.original_filename for f in args['files']]
 
     # Make the predictions
     try:
@@ -318,18 +320,25 @@ def predict_data(args):
     if merge:
         pred_lab, pred_prob = np.squeeze(pred_lab), np.squeeze(pred_prob)
 
-    return format_prediction(pred_lab, pred_prob)
+    return format_prediction(pred_lab, pred_prob,original_filename)
 
 
-def format_prediction(labels, probabilities):
-
-    pred = {'labels': [class_names[i] for i in labels],
-            'probabilities': [float(p) for p in probabilities],
-            'labels_info': [class_info[i] for i in labels],
-            'links': {'Google Images': [image_link(class_names[i]) for i in labels],
-                      'Wikipedia': [wikipedia_link(class_names[i]) for i in labels]
-                      }
-            }
+def format_prediction(labels, probabilities,original_filename):
+    pred = {'original_filename': original_filename,
+        'labels': [class_names[i] for i in labels],
+        'probabilities': [float(p) for p in probabilities],
+        'labels_info': [class_info[i] for i in labels],
+        'links': {'Google Images': [image_link(class_names[i]) for i in labels],
+                    'Wikipedia': [wikipedia_link(class_names[i]) for i in labels]
+                    }
+        }
+    # pred = {'labels': [class_names[i] for i in labels],
+    #         'probabilities': [float(p) for p in probabilities],
+    #         'labels_info': [class_info[i] for i in labels],
+    #         'links': {'Google Images': [image_link(class_names[i]) for i in labels],
+    #                   'Wikipedia': [wikipedia_link(class_names[i]) for i in labels]
+    #                   }
+    #         }
 
     return pred
 
