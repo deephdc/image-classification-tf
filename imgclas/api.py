@@ -36,7 +36,7 @@ from tensorflow.keras import backend as K
 from webargs import fields
 
 from imgclas import paths, utils, config, test_utils
-from imgclas.data_utils import load_class_names, load_class_info, mount_nextcloud
+from imgclas.data_utils import load_class_names,load_aphia_ids, load_class_info, mount_nextcloud
 from imgclas.train_runfile import train_fn
 
 
@@ -48,19 +48,20 @@ from imgclas.train_runfile import train_fn
 # field_type = type_map.get(g_val['type'], fields.Field)
 # parser[g_key] = field_type(**opt_args)
 # --> another option is to add a marshmallow schema to each config args
-
-
+NOW = str("{:%Y_%m_%d_%H_%M_%S}".format(datetime.now()))
+print(NOW, ": Starting the process")
 # Mount NextCloud folders (if NextCloud is available)
 try:
-    mount_nextcloud('rshare:/data/dataset_files', paths.get_splits_dir())
-    mount_nextcloud('rshare:/data/images', paths.get_images_dir())
+    mount_nextcloud('rshare:Imagine_UC5/data/dataset_files', paths.get_splits_dir())
+    mount_nextcloud('rshare:Imagine_UC5/data/images', paths.get_images_dir())
     #mount_nextcloud('rshare:/models', paths.get_models_dir())
+    print("Mount from nextcloud to local machine successfull! ")
 except Exception as e:
-    print(e)
+    print("Initial loading not succesfull: ",e)
 
 # Empty model variables for inference (will be loaded the first time we perform inference)
 loaded_ts, loaded_ckpt = None, None
-graph, model, conf, class_names, class_info = None, None, None, None, None
+graph, model, conf, class_names, class_info, aphia_ids = None, None, None, None, None, None
 
 # Additional parameters
 allowed_extensions = set(['png', 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG']) # allow only certain file extensions
@@ -79,7 +80,7 @@ def load_inference_model(timestamp=None, ckpt_name=None):
         Name of the checkpoint to use. The default is the last checkpoint in `./models/[timestamp]/ckpts`.
     """
     global loaded_ts, loaded_ckpt
-    global graph, model, conf, class_names, class_info
+    global graph, model, conf, class_names, class_info, aphia_ids
 
     # Set the timestamp
     timestamp_list = next(os.walk(paths.get_models_dir()))[1]
@@ -116,6 +117,7 @@ def load_inference_model(timestamp=None, ckpt_name=None):
     # Load the class names and info
     splits_dir = paths.get_ts_splits_dir()
     class_names = load_class_names(splits_dir=splits_dir)
+    aphia_ids=load_aphia_ids(splits_dir)
     class_info = None
     if 'info.txt' in os.listdir(splits_dir):
         class_info = load_class_info(splits_dir=splits_dir)
@@ -211,7 +213,7 @@ def catch_url_error(url_list):
                                  "Check you didn't uploaded a preview of the image rather than the image itself.")
 
 
-def catch_localfile_error(file_list):
+def  catch_localfile_error(file_list):
 
     # Error catch: Empty query
     if not file_list:
@@ -324,14 +326,35 @@ def predict_data(args):
 
 
 def format_prediction(labels, probabilities,original_filename):
-    pred = {'original_filename': original_filename,
-        'labels': [class_names[i] for i in labels],
-        'probabilities': [float(p) for p in probabilities],
-        'labels_info': [class_info[i] for i in labels],
-        'links': {'Google Images': [image_link(class_names[i]) for i in labels],
-                    'Wikipedia': [wikipedia_link(class_names[i]) for i in labels]
-                    }
-        }
+    # pred = {'original_filename': original_filename,
+    #     'labels': [class_names[i] for i in labels],
+    #     'probabilities': [float(p) for p in probabilities],
+    #     'labels_info': [class_info[i] for i in labels],
+    #     'links': {'Google Images': [image_link(class_names[i]) for i in labels],
+    #                 'Wikipedia': [wikipedia_link(class_names[i]) for i in labels]
+    #                 }
+    #     }
+    pred_lab=[class_names[i] for i in labels]
+    pred_aphia_ids=[aphia_ids[i] for i in labels]
+    pred_prob=[float(p) for p in probabilities]
+    pred_dict = {'filenames': original_filename,
+             'pred_lab': pred_lab,
+             'pred_prob': pred_prob,
+             'aphia_ids':pred_aphia_ids}
+    conf = config.conf_dict
+    ckpt_name=conf['testing']['ckpt_name']
+    split_name="test"
+    pred_path = os.path.join(paths.get_predictions_dir(), '{}+{}+top{}.json'.format(ckpt_name, split_name, top_K))
+    with open(pred_path, 'w') as outfile:
+        json.dump(pred_dict, outfile, sort_keys=True)
+
+    # mount_nextcloud('rshare:vliz/Imagine_UC5/data/dataset_files', paths.get_splits_dir())
+    try:
+        mount_nextcloud(pred_path, 'rshare:Imagine_UC5/predictions')
+        print("Mount predictions from local to nextcloud successfull! ")
+    except Exception as e:
+        print("Final loading not succesfull: ",e)
+    
     # pred = {'labels': [class_names[i] for i in labels],
     #         'probabilities': [float(p) for p in probabilities],
     #         'labels_info': [class_info[i] for i in labels],
@@ -340,7 +363,7 @@ def format_prediction(labels, probabilities,original_filename):
     #                   }
     #         }
 
-    return pred
+    return pred_dict
 
 
 def image_link(pred_lab):

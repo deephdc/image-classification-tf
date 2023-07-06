@@ -12,8 +12,53 @@ import json
 
 import matplotlib.pylab as plt
 import numpy as np
-
+import seaborn
 from imgclas import paths
+from imgclas import paths, plot_utils
+
+# def create_pred_path(save_path, *sub_dirs):
+#     pred_path = save_path or os.path.join(paths.get_timestamped_dir(), *sub_dirs)
+#     os.makedirs(pred_path, exist_ok=True)
+#     return pred_path
+
+def create_pred_path(save_path, dir="", aimed=False, weighted=False,**kwargs):
+    """
+    Create the directory path for saving the plots based on the provided options.
+
+    Args:
+        save_path (str): Path where the plots will be saved.
+        paths (object): Object with timestamped directory creation method.
+        aimed (bool): Flag indicating whether the confusion matrices are aimed or not.
+        weighted (bool): Flag indicating whether to compute weighted confusion matrices.
+
+    Returns:
+        str: Directory path for saving the plots.
+    """
+    value = next(iter(kwargs.values()))
+    if aimed and weighted:
+        pred_path = save_path or os.path.join(paths.get_timestamped_dir(), "results",dir, "confusion_weighted_aimed")
+    elif aimed:
+        pred_path = save_path or os.path.join(paths.get_timestamped_dir(), "results",dir, "confusion_aimed")
+    elif weighted:
+        pred_path = save_path or os.path.join(paths.get_timestamped_dir(), "results",dir, "confusion_weighted")
+    else:
+        pred_path = save_path or os.path.join(paths.get_timestamped_dir(), "results",dir,  value)
+    
+    os.makedirs(pred_path, exist_ok=True)
+    return pred_path
+
+def plt_conf_matrix(conf_mat, labels=False):
+    fig, ax = plt.subplots(figsize=(30, 30))
+    hm = seaborn.heatmap(conf_mat, annot=False, square=True, cbar_kws={'fraction': 0.046, 'pad': 0.04},
+                         xticklabels=labels, yticklabels=labels, ax=ax)
+    fontsize = None
+    hm.yaxis.set_ticklabels(hm.yaxis.get_ticklabels(), rotation=0, ha='right', fontsize=fontsize)
+    hm.xaxis.set_ticklabels(hm.xaxis.get_ticklabels(), rotation=90, ha='right', fontsize=fontsize)
+
+    ax.set_ylabel('True label')
+    ax.set_xlabel('Predicted label')
+    
+    return fig, ax
 
 
 def training_plots(conf, stats, show_val=True, show_ckpt=True):

@@ -87,6 +87,17 @@ def load_class_names(splits_dir):
     class_names = np.genfromtxt(os.path.join(splits_dir, 'classes.txt'), dtype='str', delimiter='/n')
     return class_names
 
+def load_aphia_ids(splits_dir):
+    """
+    Load list of aphia_ids
+
+    Returns
+    -------
+    Numpy array of shape (N) containing strs with class names
+    """
+    print("Loading aphia_ids...")
+    aphia_ids = np.genfromtxt(os.path.join(splits_dir, 'aphia_ids.txt'), dtype='str', delimiter='/n')
+    return aphia_ids
 
 def load_class_info(splits_dir):
     """
