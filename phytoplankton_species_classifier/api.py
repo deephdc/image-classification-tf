@@ -17,7 +17,7 @@ There is an issue of using Flask with Keras: https://github.com/jrosebr1/simple-
 The fix done (using tf.get_default_graph()) will probably not be valid for standalone wsgi container e.g. gunicorn,
 gevent, uwsgi.
 """
-
+tf
 import builtins
 from collections import OrderedDict
 from datetime import datetime
