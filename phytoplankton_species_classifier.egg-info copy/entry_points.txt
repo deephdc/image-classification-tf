@@ -1,3 +1,0 @@
-[deepaas.v2.model]
-phytoplankton_species_classifier = phytoplankton_species_classifier.api
-

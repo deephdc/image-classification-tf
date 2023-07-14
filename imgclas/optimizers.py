@@ -17,7 +17,7 @@ from tensorflow.python.ops import state_ops
 from tensorflow.python.ops import math_ops
 
 
-class customSGD(optimizers.SGD):
+class customSGD(keras.optimizers.SGD):
     """
     Custom subclass of the SGD optmizer to implement lr_mult as in Caffe
     """

@@ -15,9 +15,9 @@ from tensorflow.python.keras import optimizers
 from tensorflow.python.keras import backend as K
 from tensorflow.python.ops import state_ops
 from tensorflow.python.ops import math_ops
-
-
-class customSGD(tf.keras.optimizers.SGD):
+from tensorflow.keras.optimizers import SGD
+print("IMOROTEEDD TF")
+class customSGD(SGD):
     """
     Custom subclass of the SGD optmizer to implement lr_mult as in Caffe
     """
