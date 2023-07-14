@@ -77,8 +77,8 @@ target/
 
 # exclude data from source control by default
 data/
-hytoplankton_species_classifier/
-phytoplankton_species_classifier.egg-info/
+# hytoplankton_species_classifier/
+# phytoplankton_species_classifier.egg-info/
 # Mac OS-specific storage files
 .DS_Store
 
@@ -143,6 +143,6 @@ GTAGS
 
 # Things specific to this project 
 ###################################
-imgclas/webpage/templates/labels.html
+planktonclas/webpage/templates/labels.html
 
 

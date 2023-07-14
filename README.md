@@ -54,7 +54,7 @@ now run DEEPaaS:
 ```
 deepaas-run --listen-ip 0.0.0.0
 ```
-and open http://0.0.0.0:5000/ui and look for the methods belonging to the `imgclas` module.
+and open http://0.0.0.0:5000/ui and look for the methods belonging to the `planktonclas` module.
 
 ### Docker installation
 
@@ -66,7 +66,7 @@ docker search deephdc
 docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 deephdc/deep-oc-phyto-plankton-classification
 ```
 
-Now open http://0.0.0.0:5000/ui and look for the methods belonging to the `imgclas` module.
+Now open http://0.0.0.0:5000/ui and look for the methods belonging to the `planktonclas` module.
 
 
 ## Train an image classifier
@@ -147,7 +147,7 @@ You can have more info on how to interact directly with the module (not through 
 
 ![Saliency maps](./reports/figures/demo-saliency.png)
 
-Finally you can [launch a simple webpage](./imgclas/webpage/README.md) to use the trained classifier to predict images (both local and urls) on your favorite browser.
+Finally you can [launch a simple webpage](./planktonclas/webpage/README.md) to use the trained classifier to predict images (both local and urls) on your favorite browser.
 
 
 ## Acknowledgements
