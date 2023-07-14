@@ -13,8 +13,8 @@ import json
 import matplotlib.pylab as plt
 import numpy as np
 import seaborn
-from planktonclas import paths
-from planktonclas import paths, plot_utils
+from imgclas import paths
+from imgclas import paths, plot_utils
 
 # def create_pred_path(save_path, *sub_dirs):
 #     pred_path = save_path or os.path.join(paths.get_timestamped_dir(), *sub_dirs)

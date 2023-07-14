@@ -15,13 +15,13 @@ You have to do some preliminary steps to select the model you want to predict wi
 To launch the web execute the following:
 
 ```bash
-cd ./planktonclas/webpage
+cd ./imgclas/webpage
 python serve.py
 ```
 and it will start running at http://127.0.0.1:5000. To run the webpage in production mode you can pip-install the `gunicorn` module as an easy drop-in replacement. Once installed just run
 
 ```bash
-cd ./planktonclas/webpage
+cd ./imgclas/webpage
 gunicorn serve:app -b 0.0.0.0:80 --workers 1 --timeout 80 -k gevent
 ```
 

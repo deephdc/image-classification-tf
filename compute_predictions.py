@@ -5,9 +5,9 @@ import matplotlib.pylab as plt
 
 from tensorflow.keras.models import load_model
 
-from planktonclas.data_utils import load_image, load_data_splits, load_class_names
-from planktonclas.test_utils import predict
-from planktonclas import paths, plot_utils, utils
+from imgclas.data_utils import load_image, load_data_splits, load_class_names
+from imgclas.test_utils import predict
+from imgclas import paths, plot_utils, utils
 # 2023-06-05_143422
 # User parameters to set
 TIMESTAMP = '2023-06-05_143422'                       # timestamp of the model

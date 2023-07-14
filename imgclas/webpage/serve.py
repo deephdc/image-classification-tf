@@ -24,8 +24,8 @@ import os
 
 from flask import Flask, render_template, request, send_from_directory, json, Response, flash, Markup
 
-from planktonclas import api
-from planktonclas.webpage import webpage_utils
+from imgclas import api
+from imgclas.webpage import webpage_utils
 
 
 # Configuration parameters of the web application

@@ -16,8 +16,8 @@ import numpy as np
 from tensorflow.keras import callbacks
 from tensorflow.keras import backend as K
 
-from planktonclas import paths
-from planktonclas.optimizers import customSGD, customAdam, customAdamW
+from imgclas import paths
+from imgclas.optimizers import customSGD, customAdam, customAdamW
 
 
 def create_dir_tree():
