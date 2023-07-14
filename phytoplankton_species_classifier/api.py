@@ -35,14 +35,14 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras import backend as K
 from webargs import fields
 
-from imgclas import paths, utils, config, test_utils
-from imgclas.data_utils import (
+from planktonclas import paths, utils, config, test_utils
+from planktonclas.data_utils import (
     load_class_names,
     load_aphia_ids,
     load_class_info,
     mount_nextcloud,
 )
-from imgclas.train_runfile import train_fn
+from planktonclas.train_runfile import train_fn
 
 
 # TODO: Move to proper marshalling for arguments
@@ -547,7 +547,7 @@ def get_predict_args():
     return populate_parser(parser, default_conf)
 
 
-def get_metadata(distribution_name="imgclas"):
+def get_metadata(distribution_name="planktonclas"):
     """
     Function to read metadata
     """

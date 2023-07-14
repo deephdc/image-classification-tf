@@ -17,7 +17,7 @@ ENV LANG C.UTF-8
 WORKDIR /app
 
 # Script to run pylint
-COPY imgclas/tests/run_pylint.sh /app
+COPY planktonclas/tests/run_pylint.sh /app
 
 # Copy the current directory contents into the container at /app
 ADD . /app

@@ -3,4 +3,4 @@
 Visualization
 """
 # import project config.py
-import imgclas.config as cfg
+import planktonclas.config as cfg

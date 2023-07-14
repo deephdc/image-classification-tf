@@ -143,6 +143,6 @@ GTAGS
 
 # Things specific to this project 
 ###################################
-imgclas/webpage/templates/labels.html
+planktonclas/webpage/templates/labels.html
 
 

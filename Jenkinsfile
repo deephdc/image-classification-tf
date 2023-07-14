@@ -12,8 +12,8 @@ pipeline {
     environment {
         author_name = "Ignacio Heredia (CSIC)"
         author_email = "iheredia@ifca.unican.es"
-        app_name = "image-classification-tf"
-        job_location = "Pipeline-as-code/DEEP-OC-org/DEEP-OC-image-classification-tf/${env.BRANCH_NAME}"
+        app_name = "phyto-plankton-classification"
+        job_location = "Pipeline-as-code/DEEP-OC-org/DEEP-OC-phyto-plankton-classification/${env.BRANCH_NAME}"
     }
 
     stages {

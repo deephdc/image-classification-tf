@@ -21,7 +21,7 @@ import tensorflow.keras.backend as K
 from tensorflow.keras.models import load_model
 
 from .saliency import SaliencyMask
-from imgclas.utils import get_custom_objects
+from planktonclas.utils import get_custom_objects
 
 
 
@@ -60,7 +60,7 @@ class GuidedBackprop(SaliencyMask):
             with tf.Session().as_default(): 
                 K.set_learning_phase(0)
 
-                ########### Added specifically for the imgclas package ################
+                ########### Added specifically for the planktonclas package ################
                 custom_objects = get_custom_objects()
                 custom_objects.update({"custom_loss":custom_loss}) #original custom dict
                 #######################################################################

@@ -14,10 +14,10 @@ import subprocess
 import time
 from urllib.parse import quote_plus
 
-from imgclas import paths
+from planktonclas import paths
 
 
-module_name = 'imgclas'
+module_name = 'planktonclas'
 test_url = 'https://file-examples.com/wp-content/uploads/2017/10/file_example_JPG_100kB.jpg'
 
 data_path = os.path.join(paths.get_base_dir(), 'data')
@@ -43,19 +43,19 @@ def remove_files(src, extension):
 
 def test_load():
     print('Testing local: module load ...')
-    import imgclas.api
+    import planktonclas.api
 
 
 def test_metadata():
     print('Testing local: metadata ...')
-    from imgclas.api import get_metadata
+    from planktonclas.api import get_metadata
 
     get_metadata()
 
 
 def test_predict_url():
     print('Testing local: predict url ...')
-    from imgclas.api import predict_url
+    from planktonclas.api import predict_url
 
     args = {'urls': [test_url]}
     r = predict_url(args)
@@ -64,7 +64,7 @@ def test_predict_url():
 def test_predict_data():
     print('Testing local: predict data ...')
     from deepaas.model.v2.wrapper import UploadedFile
-    from imgclas.api import predict_data
+    from planktonclas.api import predict_data
 
     fpath = os.path.join(data_path, 'samples', 'sample.jpg')
     tmp_fpath = os.path.join(data_path, 'samples', 'tmp_file.jpg')
@@ -77,7 +77,7 @@ def test_predict_data():
 def test_train():
     print('Testing local: train ...')
 
-    from imgclas.api import get_train_args, train
+    from planktonclas.api import get_train_args, train
 
     copy_files(src=os.path.join(data_path, 'demo-dataset_files'),
                dst=os.path.join(data_path, 'dataset_files'),
@@ -138,7 +138,7 @@ def test_curl_train():
                dst=os.path.join(data_path, 'dataset_files'),
                extension='*.txt')
 
-    command = """curl -X POST "http://0.0.0.0:5000/v2/models/imgclas/train/?base_directory=%22.%22&images_directory=%22data%2Fsamples%22&modelname=%22MobileNet%22&image_size=224&num_classes=null&preprocess_mode=null&mode=%22normal%22&initial_lr=0.001&batch_size=16&epochs=15&ckpt_freq=null&lr_schedule_mode=%22step%22&lr_step_decay=0.1&lr_step_schedule=%5B0.7%2C%200.9%5D&l2_reg=0.0001&use_class_weights=false&use_validation=true&use_early_stopping=false&use_multiprocessing=false&use_tensorboard=false&use_remote=false&mean_RGB=null&std_RGB=null&train_mode=%7B%22h_flip%22%3A%200.5%2C%20%22v_flip%22%3A%200.5%2C%20%22rot%22%3A%200.7%2C%20%22rot_lim%22%3A%2090%2C%20%22stretch%22%3A%200.0%2C%20%22crop%22%3A%201.0%2C%20%22zoom%22%3A%200.2%2C%20%22blur%22%3A%200.3%2C%20%22pixel_noise%22%3A%200.3%2C%20%22pixel_sat%22%3A%200.3%2C%20%22cutout%22%3A%200.5%7D&val_mode=%7B%22h_flip%22%3A%200.5%2C%20%22v_flip%22%3A%200.0%2C%20%22rot%22%3A%200.5%2C%20%22rot_lim%22%3A%2030%2C%20%22stretch%22%3A%200.0%2C%20%22crop%22%3A%200.9%2C%20%22zoom%22%3A%200.1%2C%20%22blur%22%3A%200.1%2C%20%22pixel_noise%22%3A%200.1%2C%20%22pixel_sat%22%3A%200.1%2C%20%22cutout%22%3A%200.0%7D" -H "accept: application/json"
+    command = """curl -X POST "http://0.0.0.0:5000/v2/models/planktonclas/train/?base_directory=%22.%22&images_directory=%22data%2Fsamples%22&modelname=%22MobileNet%22&image_size=224&num_classes=null&preprocess_mode=null&mode=%22normal%22&initial_lr=0.001&batch_size=16&epochs=15&ckpt_freq=null&lr_schedule_mode=%22step%22&lr_step_decay=0.1&lr_step_schedule=%5B0.7%2C%200.9%5D&l2_reg=0.0001&use_class_weights=false&use_validation=true&use_early_stopping=false&use_multiprocessing=false&use_tensorboard=false&use_remote=false&mean_RGB=null&std_RGB=null&train_mode=%7B%22h_flip%22%3A%200.5%2C%20%22v_flip%22%3A%200.5%2C%20%22rot%22%3A%200.7%2C%20%22rot_lim%22%3A%2090%2C%20%22stretch%22%3A%200.0%2C%20%22crop%22%3A%201.0%2C%20%22zoom%22%3A%200.2%2C%20%22blur%22%3A%200.3%2C%20%22pixel_noise%22%3A%200.3%2C%20%22pixel_sat%22%3A%200.3%2C%20%22cutout%22%3A%200.5%7D&val_mode=%7B%22h_flip%22%3A%200.5%2C%20%22v_flip%22%3A%200.0%2C%20%22rot%22%3A%200.5%2C%20%22rot_lim%22%3A%2030%2C%20%22stretch%22%3A%200.0%2C%20%22crop%22%3A%200.9%2C%20%22zoom%22%3A%200.1%2C%20%22blur%22%3A%200.1%2C%20%22pixel_noise%22%3A%200.1%2C%20%22pixel_sat%22%3A%200.1%2C%20%22cutout%22%3A%200.0%7D" -H "accept: application/json"
     """
     r = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE).stdout
 

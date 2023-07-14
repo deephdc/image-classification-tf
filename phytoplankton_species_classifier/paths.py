@@ -10,7 +10,7 @@ Github: ignacioheredia
 import os.path
 from datetime import datetime
 
-from imgclas import config
+from planktonclas import config
 
 
 homedir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
