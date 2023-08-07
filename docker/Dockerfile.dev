@@ -1,8 +1,8 @@
 ##################
-# Run from ~/imgclas as
+# Run from ~/planktonclas as
 # $> docker build -t dockerimage -f docker/Dockerfile.dev .
 # Then use as
-# $> docker run -ti -v ~/imgclas:/app dockerimage /bin/bash
+# $> docker run -ti -v ~/planktonclas:/app dockerimage /bin/bash
 ##################
 # Base image, e.g. tensorflow/tensorflow:1.7.0
 FROM Base docker image for Dockerfile, e.g. tensorflow/tensorflow:1.7.0. Has to match python version!

@@ -1,17 +1,17 @@
 DEEP Open Catalogue: Image classification
 =========================================
 
-[![Build Status](https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/image-classification-tf/master)](https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/image-classification-tf/job/master/)
+[![Build Status](https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/phyto-plankton-classification/master)](https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/phyto-plankton-classification/job/master/)
 
 
-**Author:** [Ignacio Heredia](https://github.com/IgnacioHeredia) (CSIC)
+**Author:** [Ignacio Heredia & Wout Decrop](https://github.com/IgnacioHeredia) (CSIC)
 
 **Project:** This work is part of the [DEEP Hybrid-DataCloud](https://deep-hybrid-datacloud.eu/) project that has
 received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No 777435.
 
 This is a plug-and-play tool to train and evaluate an image classifier on a custom dataset using deep neural networks.
 
-You can find more information about it in the [DEEP Marketplace](https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-image-classification-tf.html).
+You can find more information about it in the [DEEP Marketplace](https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-phyto-plankton-classification.html).
 
 **Table of contents**
 1. [Installing this module](#installing-this-module)
@@ -44,8 +44,8 @@ To start using this framework clone the repo and download the [default weights](
 ```bash
 # First line installs OpenCV requirement
 apt-get update && apt-get install -y libgl1
-git clone https://github.com/deephdc/image-classification-tf
-cd image-classification-tf
+git clone https://github.com/deephdc/phyto-plankton-classification
+cd phyto-plankton-classification
 pip install -e .
 curl -o ./models/default_imagenet.tar.xz https://api.cloud.ifca.es:8080/swift/v1/imagenet-tf/default_imagenet.tar.xz
 cd models && tar -xf default_imagenet.tar.xz && rm default_imagenet.tar.xz
@@ -54,19 +54,19 @@ now run DEEPaaS:
 ```
 deepaas-run --listen-ip 0.0.0.0
 ```
-and open http://0.0.0.0:5000/ui and look for the methods belonging to the `imgclas` module.
+and open http://0.0.0.0:5000/ui and look for the methods belonging to the `planktonclas` module.
 
 ### Docker installation
 
-We have also prepared a ready-to-use [Docker container](https://github.com/deephdc/DEEP-OC-image-classification-tf) to
+We have also prepared a ready-to-use [Docker container](https://github.com/deephdc/DEEP-OC-phyto-plankton-classification) to
 run this module. To run it:
 
 ```bash
 docker search deephdc
-docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 deephdc/deep-oc-image-classification-tf
+docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 deephdc/deep-oc-phyto-plankton-classification
 ```
 
-Now open http://0.0.0.0:5000/ui and look for the methods belonging to the `imgclas` module.
+Now open http://0.0.0.0:5000/ui and look for the methods belonging to the `planktonclas` module.
 
 
 ## Train an image classifier
@@ -147,7 +147,7 @@ You can have more info on how to interact directly with the module (not through 
 
 ![Saliency maps](./reports/figures/demo-saliency.png)
 
-Finally you can [launch a simple webpage](./imgclas/webpage/README.md) to use the trained classifier to predict images (both local and urls) on your favorite browser.
+Finally you can [launch a simple webpage](./planktonclas/webpage/README.md) to use the trained classifier to predict images (both local and urls) on your favorite browser.
 
 
 ## Acknowledgements
