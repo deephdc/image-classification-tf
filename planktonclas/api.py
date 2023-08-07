@@ -35,14 +35,14 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras import backend as K
 from webargs import fields
 
-from planktonclas import paths, utils, config, test_utils
-from planktonclas.data_utils import (
+import paths, utils, config, test_utils
+from data_utils import (
     load_class_names,
     load_aphia_ids,
     load_class_info,
     mount_nextcloud,
 )
-from planktonclas.train_runfile import train_fn
+from train_runfile import train_fn
 
 
 # TODO: Move to proper marshalling for arguments

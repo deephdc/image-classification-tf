@@ -16,7 +16,7 @@ import numpy as np
 from tensorflow.keras import callbacks
 from tensorflow.keras import backend as K
 
-from planktonclas import paths
+import paths
 from planktonclas.optimizers import customSGD, customAdam, customAdamW
 
 

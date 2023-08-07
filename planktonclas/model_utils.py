@@ -21,7 +21,7 @@ from tensorflow.python.saved_model.signature_def_utils import predict_signature_
 from tensorflow.python.saved_model import tag_constants
 from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Flatten
 
-from planktonclas import paths, config, utils
+import paths, config, utils
 
 
 model_modes = {'DenseNet121': 'torch', 'DenseNet169': 'torch', 'DenseNet201': 'torch',

@@ -9,7 +9,7 @@ Github: ignacioheredia
 
 import numpy as np
 
-from planktonclas.data_utils import k_crop_data_sequence
+from data_utils import k_crop_data_sequence
 
 
 def predict(model, X, conf, top_K=None, crop_num=10, filemode='local', merge=False, use_multiprocessing=False):

@@ -32,10 +32,10 @@ import numpy as np
 import tensorflow as tf
 import tensorflow.keras.backend as K
 
-from planktonclas.data_utils import load_data_splits, compute_meanRGB, compute_classweights, load_class_names, data_sequence, \
+from data_utils import load_data_splits, compute_meanRGB, compute_classweights, load_class_names, data_sequence, \
     json_friendly
-from planktonclas import paths, config, model_utils, utils
-from planktonclas.optimizers import customAdam
+import paths, config, model_utils, utils
+from optimizers import customAdam
 
 
 # Set Tensorflow verbosity logs
