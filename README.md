@@ -1,3 +1,8 @@
+---
+# The Repository is ARCHIVED!
+### it is now maintained in https://github.com/ai4os-hub/ai4os-image-classification-tf/
+---
+
 DEEP Open Catalogue: Image classification
 =========================================
 
