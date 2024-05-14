@@ -164,7 +164,7 @@ html_static_path = ['_static']
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'imgclasdoc'
+htmlhelp_basename = 'planktonclasdoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -184,7 +184,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
     ('index',
-     'imgclas.tex',
+     'planktonclas.tex',
      u'DEEP-OC-image-classification Documentation',
      u"Ignacio Heredia (CSIC)", 'manual'),
 ]
@@ -215,7 +215,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'imgclas', u'DEEP-OC-image-classification Documentation',
+    ('index', 'planktonclas', u'DEEP-OC-image-classification Documentation',
      [u"Ignacio Heredia (CSIC)"], 1)
 ]
 
@@ -229,7 +229,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'imgclas', u'DEEP-OC-image-classification Documentation',
+    ('index', 'planktonclas', u'DEEP-OC-image-classification Documentation',
      u"Ignacio Heredia (CSIC)", 'DEEP-OC-image-classification',
      'This is a plug-and-play tool to train and evaluate an image classifier on a custom dataset using deep neural networks.', 'Miscellaneous'),
 ]
